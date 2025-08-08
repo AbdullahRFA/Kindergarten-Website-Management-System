@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Contact Us - Kindergarten SMS{% endblock %}
 
@@ -51,6 +52,7 @@
 
 <div class="container">
   <div class="contact-card">
+    {% comment %} <img src="{% static 'images/contact.avif' %}" alt="Kids studying around a table with fun" class="hero-image"> {% endcomment %}
     <h2 class="text-center">📞 Contact Us</h2>
 
     <form method="post" novalidate>
