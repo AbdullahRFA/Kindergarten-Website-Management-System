@@ -1,8 +1,64 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Teacher Dashboard</h2>
-<h4>Your Courses</h4>
-<ul>
-  {% for c in courses %}<li>{{ c.title }}</li>{% empty %}<li>No courses assigned</li>{% endfor %}
-</ul>
+<style>
+  body {
+    background: #e3f2fd;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .dashboard-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    max-width: 600px;
+    margin: 40px auto;
+  }
+
+  .dashboard-card h2 {
+    color: #1565c0;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-card h4 {
+    color: #1976d2;
+    margin-top: 20px;
+    font-weight: 500;
+  }
+
+  .course-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .course-list li {
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    background-color: #e3f2fd;
+    border-left: 5px solid #1976d2;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  .no-course {
+    font-style: italic;
+    color: #757575;
+  }
+</style>
+
+<div class="container">
+  <div class="dashboard-card">
+    <h2 class="text-center">📚 Teacher Dashboard</h2>
+    <h4>Your Courses</h4>
+    <ul class="course-list">
+      {% for c in courses %}
+        <li>📘 {{ c.title }}</li>
+      {% empty %}
+        <li class="no-course">No courses assigned</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 {% endblock %}

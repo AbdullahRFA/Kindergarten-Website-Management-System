@@ -1,11 +1,58 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Initiate Payment</h2>
-<form method="post">{% csrf_token %}
-  <div class="mb-3">
-    <label>Amount</label>
-    <input name="amount" class="form-control" />
+<style>
+  body {
+    background: linear-gradient(to right, #e3f2fd, #fce4ec); /* Soft blue-pink gradient */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .payment-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    max-width: 500px;
+    margin: 40px auto;
+  }
+
+  .payment-card h2 {
+    color: #1565c0;
+    font-weight: 600;
+    font-size: 1.8rem;
+  }
+
+  .btn-primary {
+    background-color: #1565c0;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #0d47a1;
+  }
+
+  .form-label {
+    font-weight: 500;
+  }
+
+  .form-control {
+    padding: 8px 12px;
+    font-size: 1rem;
+  }
+</style>
+
+<div class="container">
+  <div class="payment-card">
+    <h2 class="mb-4 text-center">💳 Initiate Payment</h2>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="amount" class="form-label">Amount (in BDT)</label>
+        <input name="amount" id="amount" class="form-control" placeholder="Enter amount to pay" required />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Pay (Mock)</button>
+    </form>
   </div>
-  <button class="btn btn-primary">Pay (mock)</button>
-</form>
+</div>
 {% endblock %}

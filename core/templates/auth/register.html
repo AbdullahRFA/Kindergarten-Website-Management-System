@@ -1,8 +1,97 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Student Registration</h2>
-<form method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <button class="btn btn-primary">Register</button>
-</form>
+<style>
+  body {
+    background: linear-gradient(to right, #e8f5e9, #f1f8e9);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .registration-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    margin: 30px auto;
+  }
+
+  .registration-card h2 {
+    color: #2e7d32;
+    font-weight: 600;
+    font-size: 1.8rem;
+  }
+
+  .btn-success {
+    background-color: #2e7d32;
+    border: none;
+  }
+
+  .btn-success:hover {
+    background-color: #1b5e20;
+  }
+
+  a {
+    color: #2e7d32;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .form-label {
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    padding: 6px 10px;
+    font-size: 0.95rem;
+  }
+
+  .form-text {
+    font-size: 0.85rem;
+  }
+
+  .text-danger {
+    font-size: 0.85rem;
+  }
+</style>
+
+<div class="container mt-3">
+  <div class="registration-card">
+    <h2 class="mb-3 text-center">📝 Student Registration</h2>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% if field.errors %}
+            <div class="text-danger small">
+              {% for error in field.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-success w-100 mt-3">Register</button>
+    </form>
+  </div>
+</div>
 {% endblock %}

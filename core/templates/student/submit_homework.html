@@ -1,8 +1,71 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Submit Homework: {{ homework.title }}</h2>
-<form method="post" enctype="multipart/form-data">{% csrf_token %}
-  {{ form.as_p }}
-  <button class="btn btn-primary">Submit</button>
-</form>
+<style>
+  body {
+    background: linear-gradient(to right, #e3f2fd, #fce4ec); /* Soft blue-pink gradient */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .homework-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    max-width: 600px;
+    margin: 40px auto;
+  }
+
+  .homework-card h2 {
+    color: #1976d2;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .btn-primary {
+    background-color: #1976d2;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #0d47a1;
+  }
+
+  .form-control, .form-label {
+    font-size: 1rem;
+  }
+
+  .form-text {
+    font-size: 0.85rem;
+  }
+</style>
+
+<div class="container">
+  <div class="homework-card">
+    <h2 class="text-center">📤 Submit Homework: {{ homework.title }}</h2>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% if field.errors %}
+            <div class="text-danger small">
+              {% for error in field.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
