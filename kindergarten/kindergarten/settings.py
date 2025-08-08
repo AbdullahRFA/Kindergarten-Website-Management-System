@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'kindergarten',  # Your kindergarten application
+    'core',  # Custom app for the kindergarten project
     
 ]
 
