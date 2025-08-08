@@ -1,0 +1,20 @@
+from django.contrib import admin
+from .models import User, ClassRoom, Course, StudentProfile, Enrollment, Attendance, Homework, HomeworkSubmission, ExamMark, LeaveRequest, PaymentTransaction, Message, Notification, Bus, BusLocation
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username','email','first_name','last_name','role')
+    list_filter = ('role',)
+admin.site.register(ClassRoom)
+admin.site.register(Course)
+admin.site.register(StudentProfile)
+admin.site.register(Enrollment)
+admin.site.register(Attendance)
+admin.site.register(Homework)
+admin.site.register(HomeworkSubmission)
+admin.site.register(ExamMark)
+admin.site.register(LeaveRequest)
+admin.site.register(PaymentTransaction)
+admin.site.register(Message)
+admin.site.register(Notification)
+admin.site.register(Bus)
+admin.site.register(BusLocation)

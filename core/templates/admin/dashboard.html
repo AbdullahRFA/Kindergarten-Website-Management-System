@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<ul>
+  <li>Pending admissions: {{ pending }}</li>
+  <li>Total students: {{ total_students }}</li>
+  <li>Total teachers: {{ total_teachers }}</li>
+</ul>
+{% endblock %}

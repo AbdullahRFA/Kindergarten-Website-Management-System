@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Initiate Payment</h2>
+<form method="post">{% csrf_token %}
+  <div class="mb-3">
+    <label>Amount</label>
+    <input name="amount" class="form-control" />
+  </div>
+  <button class="btn btn-primary">Pay (mock)</button>
+</form>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Student Dashboard</h2>
+{% if profile %}
+  <p>Status: {{ profile.status }}</p>
+{% else %}
+  <p>No profile found.</p>
+{% endif %}
+{% endblock %}
