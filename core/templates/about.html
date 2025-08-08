@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Kindergarten SMS{% endblock %}
+
+{% block content %}
+<style>
+  .about-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    max-width: 800px;
+    margin: 40px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .about-card h2 {
+    color: #6a1b9a;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .about-card p {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .about-card ul {
+    margin-top: 15px;
+    padding-left: 20px;
+  }
+
+  .about-card ul li {
+    margin-bottom: 8px;
+  }
+</style>
+
+<div class="container">
+  <div class="about-card">
+    <h2>About Kindergarten SMS</h2>
+    <p>
+      The Kindergarten School Management System (SMS) is a modern web-based platform designed to simplify and automate the academic and administrative operations of educational institutions. Built using Django and Bootstrap 5, our system ensures a secure, responsive, and user-friendly experience for all stakeholders.
+    </p>
+
+    <p>
+      Whether you're an administrator managing admissions, a teacher tracking homework and attendance, or a student submitting assignments, Kindergarten SMS provides the tools you need in one centralized dashboard.
+    </p>
+
+    <h4 class="mt-4">🌟 Key Features</h4>
+    <ul>
+      <li>Secure login and role-based dashboards</li>
+      <li>Online student admission and fee payment</li>
+      <li>Homework assignment and submission tracking</li>
+      <li>Attendance and exam mark management</li>
+      <li>Internal messaging and notification system</li>
+      <li>Simulated bus tracking for student safety</li>
+    </ul>
+
+    <h4 class="mt-4">🛠️ Technology Stack</h4>
+    <ul>
+      <li>Backend: Django (Python)</li>
+      <li>Frontend: HTML, CSS, Bootstrap 5</li>
+      <li>Database: PostgreSQL / SQLite</li>
+      <li>Deployment: PythonAnywhere, Render, or Heroku</li>
+    </ul>
+
+    <p class="mt-4">
+      Our mission is to create inclusive, intuitive, and efficient tools that empower schools to focus on what matters most — education and student growth.
+    </p>
+  </div>
+</div>
+{% endblock %}

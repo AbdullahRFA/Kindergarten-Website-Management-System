@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Kindergarten SMS{% endblock %}
+
+{% block content %}
+<style>
+  .hero-section {
+    background: linear-gradient(to right, #fce4ec, #e3f2fd);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #6a1b9a;
+  }
+
+  .hero-section p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-top: 15px;
+  }
+
+  .feature-list {
+    margin-top: 30px;
+    text-align: left;
+  }
+
+  .feature-list li {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #333;
+  }
+
+  .btn-group {
+    margin-top: 30px;
+  }
+
+  .btn-group .btn {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="hero-section">
+    <h1>Welcome to Kindergarten School Management System</h1>
+    <p>A modern platform to manage admissions, academics, communication, and more — all in one place.</p>
+
+    <ul class="feature-list list-unstyled">
+      <li>✅ Online Student Admission & Fee Payment</li>
+      <li>📚 Homework, Attendance & Exam Tracking</li>
+      <li>📢 Notifications & Messaging System</li>
+      <li>🚌 Simulated Bus Location Tracking</li>
+      <li>🔐 Secure Login for Admins, Teachers & Students</li>
+    </ul>
+
+    <div class="btn-group">
+      <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-success">Register as Student</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

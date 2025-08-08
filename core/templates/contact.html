@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Kindergarten SMS{% endblock %}
+
+{% block content %}
+<style>
+  .contact-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    max-width: 700px;
+    margin: 40px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .contact-card h2 {
+    color: #0288d1;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    font-weight: 500;
+  }
+
+  .form-control {
+    padding: 8px 12px;
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    background-color: #0288d1;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #01579b;
+  }
+
+  .contact-info {
+    margin-top: 30px;
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  .contact-info p {
+    margin-bottom: 6px;
+  }
+</style>
+
+<div class="container">
+  <div class="contact-card">
+    <h2 class="text-center">📞 Contact Us</h2>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="name" class="form-label">Your Name</label>
+        <input type="text" name="name" id="name" class="form-control" placeholder="Enter your full name" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email Address</label>
+        <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required>
+      </div>
+      <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea name="message" id="message" rows="4" class="form-control" placeholder="Write your message here..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Send Message</button>
+    </form>
+
+    <div class="contact-info text-center mt-4">
+      <p><strong>Kindergarten School</strong></p>
+      <p>123 School Lane, Dhaka, Bangladesh</p>
+      <p>Email: info@kindergarten-sms.com</p>
+      <p>Phone: +880-1234-567890</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

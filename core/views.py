@@ -5,6 +5,19 @@ from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus
 from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm
+
+
+def homepage(request):
+    return render(request, 'homepage.html')
+def about(request):
+    return render(request, 'about.html')
+def contact(request):
+    return render(request, 'contact.html')
+
+def SRS(request):
+    return render(request, 'SRS.html')
+@login_required
+
 def register_student(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
