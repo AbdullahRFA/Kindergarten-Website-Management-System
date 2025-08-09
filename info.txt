@@ -1,0 +1,22 @@
+Super admin
+Username : sakib 
+password : 1234
+
+admin
+Username: abdullah
+password : sakib@383
+
+student
+Username : tawhid
+password : TInishat2002
+
+
+
+from core.models import User  # or use django.contrib.auth.models if you're using the default User model
+user = User.objects.get(username='abdullah')
+user.set_password('sakib@383')
+user.save()
+
+from django.contrib.auth import authenticate
+user = authenticate(username='abdullah', password='sakib@383')
+print(user)

@@ -16,7 +16,7 @@ def contact(request):
 
 def SRS(request):
     return render(request, 'SRS.html')
-@login_required
+
 
 def register_student(request):
     if request.method == 'POST':
