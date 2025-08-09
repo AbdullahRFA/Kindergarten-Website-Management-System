@@ -8,31 +8,57 @@
   .contact-card {
     background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    max-width: 700px;
-    margin: 40px auto;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    padding: 40px;
+    max-width: 800px;
+    margin: 60px auto;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .contact-card:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
   }
 
   .contact-card h2 {
     color: #0288d1;
-    font-weight: 600;
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
+
+  .contact-card p {
+    font-size: 1rem;
+    color: #555;
     margin-bottom: 20px;
   }
 
   .form-label {
-    font-weight: 500;
+    font-weight: 600;
+    color: #333;
   }
 
   .form-control {
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #0288d1;
+    box-shadow: none;
   }
 
   .btn-primary {
     background-color: #0288d1;
     border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
   }
 
   .btn-primary:hover {
@@ -40,7 +66,7 @@
   }
 
   .contact-info {
-    margin-top: 30px;
+    margin-top: 40px;
     font-size: 0.95rem;
     color: #555;
   }
@@ -48,12 +74,33 @@
   .contact-info p {
     margin-bottom: 6px;
   }
+
+  .hero-div {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .hero-image {
+    max-width: 70%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+  }
+
+  .hero-image:hover {
+    transform: scale(1.02);
+  }
 </style>
 
 <div class="container">
   <div class="contact-card">
-    {% comment %} <img src="{% static 'images/contact.avif' %}" alt="Kids studying around a table with fun" class="hero-image"> {% endcomment %}
+    <div class="hero-div">
+      <img src="{% static 'images/contact.avif' %}" alt="Contact illustration" class="hero-image">
+    </div>
+
     <h2 class="text-center">📞 Contact Us</h2>
+    <p class="text-center">We’d love to hear from you! Whether you have questions, feedback, or just want to say hello, feel free to reach out using the form below.</p>
 
     <form method="post" novalidate>
       {% csrf_token %}
@@ -74,9 +121,9 @@
 
     <div class="contact-info text-center mt-4">
       <p><strong>Kindergarten School</strong></p>
-      <p>123 School Lane, Dhaka, Bangladesh</p>
-      <p>Email: info@kindergarten-sms.com</p>
-      <p>Phone: +880-1234-567890</p>
+      <p>📍 123 School Lane, Dhaka, Bangladesh</p>
+      <p>📧 info@kindergarten-sms.com</p>
+      <p>📱 +880-1234-567890</p>
     </div>
   </div>
 </div>

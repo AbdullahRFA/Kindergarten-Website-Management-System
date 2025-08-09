@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}About Us - Kindergarten SMS{% endblock %}
 
 {% block content %}
@@ -7,57 +7,138 @@
   .about-card {
     background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    max-width: 800px;
-    margin: 40px auto;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    padding: 40px;
+    max-width: 900px;
+    margin: 60px auto;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: box-shadow 0.3s ease;
   }
 
-  .about-card h2 {
+  .about-card:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .about-card h2, .about-card h4 {
     color: #6a1b9a;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 20px;
   }
 
   .about-card p {
     font-size: 1rem;
     color: #444;
-    line-height: 1.6;
+    line-height: 1.7;
+    margin-bottom: 20px;
   }
 
   .about-card ul {
-    margin-top: 15px;
     padding-left: 20px;
+    margin-bottom: 30px;
   }
 
   .about-card ul li {
     margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: #333;
+  }
+
+  .hero-div {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .hero-image {
+    max-width: 70%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+  }
+
+  .hero-image:hover {
+    transform: scale(1.02);
+  }
+
+  .stats-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+
+  .stats-item {
+    flex: 1 1 45%;
+    background-color: #f3e5f5;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .stats-item h5 {
+    font-size: 1.2rem;
+    color: #6a1b9a;
+    margin-bottom: 10px;
+  }
+
+  .stats-item p {
+    font-size: 1rem;
+    color: #333;
+    margin: 0;
   }
 </style>
 
 <div class="container">
   <div class="about-card">
+    <div class="hero-div">
+      <img src="{% static 'images/about.png' %}" alt="About Kindergarten SMS" class="hero-image">
+    </div>
+
     <h2>About Kindergarten SMS</h2>
     <p>
-      The Kindergarten School Management System (SMS) is a modern web-based platform designed to simplify and automate the academic and administrative operations of educational institutions. Built using Django and Bootstrap 5, our system ensures a secure, responsive, and user-friendly experience for all stakeholders.
+      Kindergarten School Management System (SMS) is a comprehensive digital platform designed to streamline every aspect of school operations—from admissions and academics to communication and finance. Built with Django and Bootstrap 5, it offers secure, responsive, and intuitive tools for administrators, teachers, students, and parents.
     </p>
 
-    <p>
-      Whether you're an administrator managing admissions, a teacher tracking homework and attendance, or a student submitting assignments, Kindergarten SMS provides the tools you need in one centralized dashboard.
-    </p>
-
-    <h4 class="mt-4">🌟 Key Features</h4>
+    <h4>🎓 Our Process</h4>
     <ul>
-      <li>Secure login and role-based dashboards</li>
-      <li>Online student admission and fee payment</li>
-      <li>Homework assignment and submission tracking</li>
-      <li>Attendance and exam mark management</li>
+      <li>Digital admission and enrollment with automated fee tracking</li>
+      <li>Role-based dashboards for admins, teachers, and students</li>
+      <li>Daily attendance, homework submission, and exam results</li>
       <li>Internal messaging and notification system</li>
       <li>Simulated bus tracking for student safety</li>
     </ul>
 
-    <h4 class="mt-4">🛠️ Technology Stack</h4>
+    <h4>📊 School Statistics</h4>
+    <div class="stats-box">
+      <div class="stats-item">
+        <h5>👩‍🎓 Students Enrolled</h5>
+        <p>1,200+ across KG to Class 12</p>
+      </div>
+      <div class="stats-item">
+        <h5>🏆 Student Achievements</h5>
+        <p>National Olympiad Winners, Art & Debate Champions</p>
+      </div>
+      <div class="stats-item">
+        <h5>👩‍🏫 Faculty Members</h5>
+        <p>60+ certified teachers with subject expertise</p>
+      </div>
+      <div class="stats-item">
+        <h5>🧑‍💼 Management Team</h5>
+        <p>10 dedicated staff managing operations, finance & IT</p>
+      </div>
+    </div>
+
+    <h4>💰 Financial Transparency</h4>
+    <ul>
+      <li>Monthly revenue reports available to stakeholders</li>
+      <li>Tax-compliant operations under Bangladesh regulations</li>
+      <li>Scholarship programs funded through donations & surplus</li>
+      <li>Secure online payment gateway for fees and donations</li>
+    </ul>
+
+    <h4>🛠️ Technology Stack</h4>
     <ul>
       <li>Backend: Django (Python)</li>
       <li>Frontend: HTML, CSS, Bootstrap 5</li>
@@ -65,8 +146,8 @@
       <li>Deployment: PythonAnywhere, Render, or Heroku</li>
     </ul>
 
-    <p class="mt-4">
-      Our mission is to create inclusive, intuitive, and efficient tools that empower schools to focus on what matters most — education and student growth.
+    <p>
+      Our mission is to empower schools with inclusive, efficient, and scalable tools that allow educators to focus on what truly matters—student growth and lifelong learning.
     </p>
   </div>
 </div>
