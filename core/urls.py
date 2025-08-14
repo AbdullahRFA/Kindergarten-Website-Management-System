@@ -10,6 +10,10 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('register/', views.register_student, name='register'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    
+    path('student_profile/', views.student_profile, name='student_profile'),
+    path('student_profile_and_edit/', views.student_profile_and_edit, name='student_profile_and_edit'),
+    
     path('teacher/homework/create/', views.create_homework, name='create_homework'),
     path('student/homework/<int:pk>/submit/', views.submit_homework, name='submit_homework'),
     path('payment/initiate/', views.initiate_payment, name='initiate_payment'),

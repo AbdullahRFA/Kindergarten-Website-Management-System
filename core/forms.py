@@ -84,3 +84,18 @@ class LeaveRequestForm(forms.ModelForm):
             'end_date': 'End Date',
             'reason': 'Reason for Leave',
         }
+
+
+class StudentProfileForm(forms.ModelForm):
+    class Meta:
+        model = StudentProfile
+        fields = [
+            'full_name', 'class_room', 'date_of_birth', 'address', 'phone',
+            'photo', 'guardian_name', 'guardian_relation', 'guardian_email',
+            'guardian_phone', 'admission_date', 'admission_fee_paid', 'status'
+        ]
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'admission_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
+        

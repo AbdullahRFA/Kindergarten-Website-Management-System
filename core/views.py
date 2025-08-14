@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus
-from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm
+from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm
 
 
 def homepage(request):
@@ -42,6 +42,38 @@ def dashboard(request):
     else:
         student_profile = getattr(user, 'student_profile', None)
         return render(request, 'student/dashboard.html', {'profile': student_profile})
+    
+
+@login_required
+def student_profile(request):
+    # Ensure the user has a profile, else create one
+    profile, created = StudentProfile.objects.get_or_create(user=request.user)
+    print(request.user)
+    return render(request, 'student/student_profile.html', {
+        'profile': profile
+    })
+
+@login_required
+def student_profile_and_edit(request):
+    # Ensure the user has a profile, else create one
+    profile, created = StudentProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = StudentProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile has been updated successfully!")
+            return redirect('student_profile')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = StudentProfileForm(instance=profile)
+
+    return render(request, 'student/student_profile_edit.html', {
+        'form': form,
+        'profile': profile
+    })
+
 @login_required
 def create_homework(request):
     if request.user.role != 'teacher':

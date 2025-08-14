@@ -89,7 +89,7 @@
 
     /* Footer */
     footer {
-      position: fixed;
+     
       bottom: 0;
       left: 0;
       right: 0;
@@ -145,22 +145,31 @@
 
   <!-- Sidebar -->
   <div class="sidebar text-center">
-    {% if request.user.profile_picture %}
-      <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="profile-pic"/>
-    {% else %}
-      <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-pic"/>
-    {% endif %}
 
-    {% if request.user.is_authenticated %}
-      <h5>{{ request.user.get_full_name|default:request.user.username }}</h5>
-      <p>{{ request.user.role|title }}</p>
-    {% endif %}
+    
+    {% if request.user.role == "student" %}
+          {% if request.user.photo %}
+          <img src="{{ request.user.photo.url }}" alt="Profile Picture" class="profile-pic"/>
+        {% else %}
+          <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-pic"/>
+        {% endif %}
 
-    <a href="{% url 'dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="#"><i class="fas fa-tasks"></i> My Tasks</a>
-    <a href="#"><i class="fas fa-calendar-check"></i> Attendance</a>
-    <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
-    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        {% if request.user.is_authenticated %}
+          <h5>{{ request.user.get_full_name|default:request.user.username }}</h5>
+          <p>{{ request.user.role|title }}</p>
+        {% endif %}
+
+        <a href="{% url 'dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="{% url 'student_profile' %}"><i class="fas fa-home"></i> Profile</a>
+        <a href="{% url 'student_profile_and_edit' %}"><i class="fas fa-home"></i> Profile and Edit</a>
+        <a href="#"><i class="fas fa-tasks"></i> My Tasks</a>
+        <a href="#"><i class="fas fa-calendar-check"></i> Attendance</a>
+        <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+    {% endif %}
+      
+    
+    
   </div>
 
   <!-- Main content -->
