@@ -207,11 +207,15 @@
       <li>🚌 Simulated Bus Location Tracking</li>
       <li>🔐 Secure Login for Admins, Teachers & Students</li>
     </ul>
-
+    
+    {% if not request.user.is_authenticated %}
     <div class="btn-group">
       <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
       <a href="{% url 'register' %}" class="btn btn-success">Register as Student</a>
     </div>
+      
+    {% endif %}
+      
   </div>
 
 <!-- 🎓 Class Features Section -->

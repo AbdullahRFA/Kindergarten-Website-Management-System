@@ -17,6 +17,9 @@ urlpatterns = [
     path('teacher_profile/', views.teacher_profile, name='teacher_profile'),
     path('teacher_profile_edit/', views.teacher_profile_edit, name='teacher_profile_edit'),
     
+    path('admin_profile/', views.admin_profile, name='admin_profile'),
+    path('admin_profile_edit/', views.admin_profile_edit, name='admin_profile_edit'),
+    
     path('teacher/homework/create/', views.create_homework, name='create_homework'),
     path('student/homework/<int:pk>/submit/', views.submit_homework, name='submit_homework'),
     path('payment/initiate/', views.initiate_payment, name='initiate_payment'),

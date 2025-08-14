@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile
+from django.core.validators import RegexValidator
+from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile, AdminProfile
 class StudentRegistrationForm(UserCreationForm):
     guardian_name = forms.CharField(
         required=False,
@@ -98,6 +99,18 @@ class StudentProfileForm(forms.ModelForm):
             'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'admission_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
+        labels = {
+            'full_name': 'Full Name',
+            'class_room': 'Class Room',
+            'date_of_birth': 'Date of Birth',
+            'address': 'Address',
+            'phone': 'Phone Number',
+            'photo': 'Profile Photo',
+            'guardian_name': "Guardian's Name",
+            'guardian_relation': "Guardian's Relation",
+            'guardian_email': "Guardian's Email",
+            'guardian_phone': "Guardian's Phone Number"
+        }       
         
 
 class TeacherProfileForm(forms.ModelForm):
@@ -112,4 +125,77 @@ class TeacherProfileForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'qualification': forms.TextInput(attrs={'class': 'form-control'}),
             'experience_years': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+        }
+        labels = {
+            'full_name': 'Full Name',
+            'class_room': 'Class Room',
+            'date_of_birth': 'Date of Birth',
+            'address': 'Address',
+            'phone': 'Phone Number',
+            'photo': 'Profile Photo',
+            'qualification': 'Qualification',
+            'experience_years': 'Years of Experience'
+        }
+
+
+phone_validator = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
+)
+
+class AdminProfileForm(forms.ModelForm):
+    phone = forms.CharField(
+        validators=[phone_validator],
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label='Phone Number',
+        max_length=24
+    )
+    emergency_contact = forms.CharField(
+        validators=[phone_validator],
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label='Emergency Contact',
+        max_length=24
+    )
+
+    class Meta:
+        model = AdminProfile
+        fields = [
+            'full_name',
+            'designation',
+            'office_email',
+            'date_of_birth',
+            'joining_date',
+            'national_id',
+            'address',
+            'phone',
+            'emergency_contact',
+            'photo',
+            'bio',
+            'is_active',
+        ]
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'joining_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'designation': forms.TextInput(attrs={'class': 'form-control'}),
+            'office_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'national_id': forms.TextInput(attrs={'class': 'form-control'}),
+            'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'full_name': 'Full Name',
+            'designation': 'Designation',
+            'office_email': 'Office Email',
+            'date_of_birth': 'Date of Birth',
+            'joining_date': 'Joining Date',
+            'national_id': 'National ID',
+            'address': 'Address',
+            'phone': 'Phone Number',
+            'emergency_contact': 'Emergency Contact',
+            'photo': 'Profile Photo',
+            'bio': 'Bio',
+            'is_active': 'Active Status'
         }

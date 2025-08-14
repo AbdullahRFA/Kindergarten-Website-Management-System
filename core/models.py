@@ -29,6 +29,27 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+class AdminProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_profile')
+    full_name = models.CharField(max_length=128, blank=True)
+    designation = models.CharField(max_length=64, blank=True)
+    office_email = models.EmailField(blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    joining_date = models.DateField(null=True, blank=True)
+    national_id = models.CharField(max_length=32, blank=True)
+    address = models.TextField(blank=True)
+    phone = models.CharField(max_length=24, blank=True)
+    emergency_contact = models.CharField(max_length=24, blank=True)
+    photo = models.ImageField(upload_to='admin_photos/', blank=True, null=True)
+    bio = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.full_name or self.user.username
+
+
 class TeaacherProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
     full_name = models.CharField(max_length=128, blank=True)

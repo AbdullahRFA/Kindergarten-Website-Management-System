@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
-from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile
-from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm
+from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile
+from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm
 
 
 def homepage(request):
@@ -43,6 +43,27 @@ def dashboard(request):
         student_profile = getattr(user, 'student_profile', None)
         return render(request, 'student/dashboard.html', {'profile': student_profile})
 
+
+@login_required
+def admin_profile(request):
+     # Ensure the user has a profile, else create one
+    profile, created = AdminProfile.objects.get_or_create(user=request.user)
+    print(request.user)
+    return render(request, 'admin/admin_profile.html', {
+        'profile': profile
+    })
+
+@login_required
+def admin_profile_edit(request):
+    profile = get_object_or_404(AdminProfile, user=request.user)
+    if request.method == 'POST':
+        form = AdminProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_profile')
+    else:
+        form = AdminProfileForm(instance=profile)
+    return render(request, 'admin/admin_profile_edit.html', {'form': form, 'profile': profile})
 
 @login_required
 def teacher_profile(request):
