@@ -78,18 +78,20 @@
 
     /* MAIN CONTENT */
     .main-content {
-      margin-top: 56px;  /* below navbar */
-      margin-left: 250px; /* beside sidebar */
+      margin-top: 56px;
+      margin-left: 250px;
       padding: 20px;
-      min-height: calc(100vh - 106px); /* navbar + footer */
+      min-height: calc(100vh - 106px);
       transition: margin-left 0.3s ease;
+    }
+    .main-content.full-width {
+      margin-left: 0 !important;
     }
 
     /* FOOTER */
     footer {
-      
       bottom: 0;
-      left: 250px;
+      left: 0;
       right: 0;
       height: 50px;
       background-color: #fff;
@@ -98,6 +100,7 @@
       font-size: 0.9rem;
       color: #555;
       border-top: 1px solid #ddd;
+      position: fixed;
     }
   </style>
 </head>
@@ -143,7 +146,6 @@
   <!-- SIDEBAR -->
   {% if request.user.is_authenticated %}
   <div class="sidebar text-center">
-    <!-- Profile Picture -->
     {% if request.user.role == "student" %}
       {% if request.user.student_profile.photo %}
         <img src="{{ request.user.student_profile.photo.url }}" alt="Profile Picture" class="profile_pic shadow-sm" />
@@ -164,12 +166,10 @@
       {% endif %}
     {% endif %}
 
-    <!-- Name & Role -->
     <h5 class="mt-2 mb-0">{{ request.user.get_full_name|default:request.user.username }}</h5>
     <p class="text-light small mb-3">{{ request.user.role|title }}</p>
     <hr class="border-light">
 
-    <!-- Menu Links -->
     {% if request.user.role == "student" %}
       <a href="{% url 'dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
       <a href="{% url 'student_profile' %}"><i class="fas fa-user me-2"></i> Profile</a>
@@ -191,13 +191,16 @@
       <a href="#"><i class="fas fa-chalkboard me-2"></i> Manage Classes</a>
       <a href="#"><i class="fas fa-cogs me-2"></i> System Settings</a>
     {% endif %}
-  </div>
+      </div>
   {% endif %}
 
   <!-- MAIN CONTENT -->
-  <div class="main-content">
+  <div class="{% if request.user.is_authenticated %}main-content{% else %}main-content full-width{% endif %}">
     {% for msg in messages %}
-      <div class="alert alert-info">{{ msg }}</div>
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
     {% endfor %}
     {% block content %}{% endblock %}
   </div>
@@ -210,3 +213,4 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
