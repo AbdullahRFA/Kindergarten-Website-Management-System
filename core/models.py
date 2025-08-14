@@ -14,17 +14,34 @@ class User(AbstractUser):
         return self.role == 'teacher'
     def is_student(self):
         return self.role == 'student'
+    
+    
 class ClassRoom(models.Model):
     name = models.CharField(max_length=64)
     grade = models.CharField(max_length=32, blank=True)
     def __str__(self):
         return f"{self.grade} - {self.name}" if self.grade else self.name
+    
 class Course(models.Model):
     title = models.CharField(max_length=128)
     classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE)
     teacher = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, limit_choices_to={'role': 'teacher'})
     def __str__(self):
         return self.title
+
+class TeaacherProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
+    full_name = models.CharField(max_length=128, blank=True)
+    class_room = models.ForeignKey(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    address = models.TextField(blank=True)
+    phone = models.CharField(max_length=24, blank=True)
+    photo = models.ImageField(upload_to='teacher_photos/', blank=True, null=True)
+    qualification = models.CharField(max_length=256, blank=True)
+    experience_years = models.PositiveIntegerField(default=0)
+    def __str__(self):
+        return self.full_name or self.user.username 
+    
 class StudentProfile(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending Approval'),
@@ -32,11 +49,26 @@ class StudentProfile(models.Model):
         ('rejected', 'Rejected'),
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    full_name = models.CharField(max_length=128, blank=True)
+    class_room = models.ForeignKey(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    address = models.TextField(blank=True)
+    phone = models.CharField(max_length=24, blank=True)
+    photo = models.ImageField(upload_to='student_photos/', blank=True, null=True)
     guardian_name = models.CharField(max_length=128, blank=True)
+    guardian_relation = models.CharField(max_length=64, blank=True)
+    guardian_email = models.EmailField(blank=True)
     guardian_phone = models.CharField(max_length=24, blank=True)
+    admission_date = models.DateField(default=timezone.now)
+    admission_fee_paid = models.BooleanField(default=False)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='pending')
+    class Meta:
+        verbose_name = "Student Profile"
+        verbose_name_plural = "Student Profiles"
     def __str__(self):
-        return self.user.get_full_name() or self.user.username
+        return self.full_name or self.user.username 
+    def get_full_name(self):
+        return self.full_name or f"{self.user.first_name} {self.user.last_name}"    
 class Enrollment(models.Model):
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

@@ -10,6 +10,10 @@ student
 Username : tawhid
 password : TInishat2002
 
+teacher
+Username : shanto
+password : sakib@383
+
 
 
 from core.models import User  # or use django.contrib.auth.models if you're using the default User model

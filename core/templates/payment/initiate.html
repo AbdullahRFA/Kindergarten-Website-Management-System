@@ -45,7 +45,7 @@
   <div class="payment-card">
     <h2 class="mb-4 text-center">💳 Initiate Payment</h2>
 
-    <form method="post" novalidate>
+    <form method="post" action="{% url 'initiate_payment' %}">
       {% csrf_token %}
       <div class="mb-3">
         <label for="amount" class="form-label">Amount (in BDT)</label>
