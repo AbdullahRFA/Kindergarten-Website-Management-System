@@ -92,7 +92,7 @@ class StudentProfileForm(forms.ModelForm):
         fields = [
             'full_name', 'class_room', 'date_of_birth', 'address', 'phone',
             'photo', 'guardian_name', 'guardian_relation', 'guardian_email',
-            'guardian_phone', 'admission_date', 'admission_fee_paid', 'status'
+            'guardian_phone'
         ]
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
