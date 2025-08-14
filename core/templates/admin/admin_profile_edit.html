@@ -7,25 +7,46 @@
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        margin-top: 30px;
+        margin-top: 40px;
+        padding: 0 15px;
     }
+
     .profile-card {
         width: 100%;
-        max-width: 700px;
-        border-radius: 15px;
-        overflow: hidden;
+        max-width: 800px;
+        border-radius: 12px;
         background-color: #fff;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
     }
+
+    .profile-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
     .profile-header {
         background: linear-gradient(135deg, #f48fb1, #ff6f91);
-        padding: 20px 30px;
+        padding: 30px;
         color: white;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
+        gap: 20px;
     }
+
+    .profile-header h3 {
+        font-size: 1.6rem;
+        margin-bottom: 5px;
+    }
+
+    .profile-header p {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
     .profile-photo {
         width: 120px;
         height: 120px;
@@ -36,21 +57,68 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
     }
+
     .profile-photo:hover {
         transform: scale(1.05);
     }
+
     .profile-body {
-        padding: 20px 30px;
+        padding: 30px;
     }
+
+    .form-section {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #ff6f91;
+    }
+
+    .form-section h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #444;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.95rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #ff6f91;
+        outline: none;
+    }
+
     .btn-primary {
         background: linear-gradient(135deg, #f48fb1, #ff6f91);
         border: none;
-        transition: all 0.3s ease-in-out;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 12px 20px;
+        width: 100%;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        color: #fff;
     }
+
     .btn-primary:hover {
-        background-color: #0056b3;
-        transform: translateY(-2px);
+        background-color: #e85c8b;
+        transform: translateY(-1px);
     }
 </style>
 
@@ -58,10 +126,10 @@
     <div class="profile-card">
 
         <!-- Header -->
-        <div class="profile-header">
+        <header class="profile-header">
             <div>
                 <h3>Edit Admin Profile</h3>
-                <p class="mb-1">{{ profile.full_name }}</p>
+                <p>{{ profile.full_name }}</p>
             </div>
             <div>
                 {% if profile.photo %}
@@ -70,18 +138,52 @@
                     <img src="https://via.placeholder.com/150" alt="Profile Photo" class="profile-photo">
                 {% endif %}
             </div>
-        </div>
+        </header>
 
         <!-- Body -->
-        <div class="profile-body">
+        <section class="profile-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="p-3 bg-light rounded">
-                    {{ form.as_p }}
+                
+                <div class="form-section">
+                    <h5>👤 Personal Details</h5>
+                    {{ form.full_name.label_tag }} {{ form.full_name }}
+                    {{ form.date_of_birth.label_tag }} {{ form.date_of_birth }}
+                    {{ form.national_id.label_tag }} {{ form.national_id }}
+                    {{ form.address.label_tag }} {{ form.address }}
                 </div>
-                <button type="submit" class="btn btn-primary mt-3 w-100">Save Changes</button>
+
+                <div class="form-section">
+                    <h5>📞 Contact Information</h5>
+                    {{ form.phone.label_tag }} {{ form.phone }}
+                    {{ form.emergency_contact.label_tag }} {{ form.emergency_contact }}
+                    {{ form.office_email.label_tag }} {{ form.office_email }}
+                    {{ form.user.label_tag }} {{ form.user }}
+                </div>
+
+                <div class="form-section">
+                    <h5>📄 Additional Info</h5>
+                    {{ form.bio.label_tag }} {{ form.bio }}
+                    {{ form.skills.label_tag }} {{ form.skills }}
+                    {{ form.experience.label_tag }} {{ form.experience }}
+                    {{ form.education.label_tag }} {{ form.education }}
+                    {{ form.languages.label_tag }} {{ form.languages }}
+                    {{ form.hobbies.label_tag }} {{ form.hobbies }}
+                    {{ form.social_media.label_tag }} {{ form.social_media }}
+                    {{ form.achievements.label_tag }} {{ form.achievements }}
+                    {{ form.certifications.label_tag }} {{ form.certifications }}
+                    {{ form.interests.label_tag }} {{ form.interests }}
+                    {{ form.notes.label_tag }} {{ form.notes }}
+                </div>
+
+                <div class="form-section">
+                    <h5>📷 Profile Photo</h5>
+                    {{ form.photo.label_tag }} {{ form.photo }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Changes</button>
             </form>
-        </div>
+        </section>
     </div>
 </div>
 {% endblock %}

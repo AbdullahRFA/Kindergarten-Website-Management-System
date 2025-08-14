@@ -7,111 +7,160 @@
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        margin-top: 30px;
+        margin-top: 40px;
+        padding: 0 15px;
     }
     .profile-card {
         width: 100%;
-        max-width: 650px;
-        border-radius: 10px;
+        max-width: 800px;
+        border-radius: 12px;
         overflow: hidden;
-        background-color: #fff;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        background-color: #ffffff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
         transition: box-shadow 0.3s ease;
     }
     .profile-card:hover {
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     }
+
     .profile-header {
-        background: linear-gradient(135deg, #f48fb1, #ff6f91);
-        padding: 30px 20px;
-        text-align: center;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        padding: 30px 30px;
         color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
     }
+
+    .profile-header-text {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .profile-header-text h2 {
+        margin-bottom: 5px;
+        font-size: 1.8rem;
+    }
+
+    .profile-header-text p {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
     .profile-pic {
-        width: 140px;
-        height: 140px;
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
         object-fit: cover;
         border: 4px solid #fff;
-        margin-top: -70px;
         background-color: #fff;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
     }
+
     .profile-pic:hover {
         transform: scale(1.04);
     }
+
     .profile-body {
-        padding: 20px 30px;
+        padding: 30px;
     }
+
     .section-title {
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         color: #333;
-        border-left: 4px solid #007bff;
-        padding-left: 10px;
-        margin-bottom: 12px;
+        border-left: 4px solid #2575fc;
+        padding-left: 12px;
+        margin: 30px 0 15px;
     }
+
     .profile-info p {
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         font-size: 0.95rem;
-        color: #555;
+        color: #444;
     }
+
+    .text-justify {
+        text-align: justify;
+    }
+
     .btn-primary {
-        background: linear-gradient(135deg, #f48fb1, #ff6f91);
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
         border: none;
         font-weight: 500;
-        padding: 8px 16px;
+        padding: 10px 18px;
         transition: background-color 0.3s ease, transform 0.2s ease;
+        color: #fff;
+        font-size: 1rem;
     }
+
     .btn-primary:hover {
-        background-color: #0056b3;
+        background-color: #1a53c3;
         transform: translateY(-1px);
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #222;
     }
 </style>
 
 <div class="profile-wrapper">
     <div class="profile-card">
 
-        <!-- Header -->
+        <!-- Header with Photo -->
         <div class="profile-header">
-            <h3 class="mb-2">{{ profile.full_name }}</h3>
-            <p class="mb-0">{{ profile.designation|default:"Admin" }}</p>
-        </div>
-
-        <!-- Photo -->
-        <div class="text-center">
-            {% if profile.photo %}
-                <img src="{{ profile.photo.url }}" alt="Profile Photo" class="profile-pic">
-            {% else %}
-                <img src="https://via.placeholder.com/140" alt="Profile Photo" class="profile-pic">
-            {% endif %}
+            <div class="profile-header-text">
+                <h2>{{ profile.full_name }}</h2>
+                <p>{{ profile.designation|default:"Administrator" }}</p>
+            </div>
+            <div>
+                {% if profile.photo %}
+                    <img src="{{ profile.photo.url }}" alt="Profile Photo" class="profile-pic">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" alt="Profile Photo" class="profile-pic">
+                {% endif %}
+            </div>
         </div>
 
         <!-- Body -->
         <div class="profile-body profile-info">
-            <h5 class="section-title">Personal Information</h5>
-            <p><strong>Date of Birth:</strong> {{ profile.date_of_birth|date:"d M Y" }}</p>
-            <p><strong>Joining Date:</strong> {{ profile.joining_date|date:"d M Y" }}</p>
-            <p><strong>National ID:</strong> {{ profile.national_id }}</p>
-            <p><strong>Address:</strong> {{ profile.address }}</p>
-            <p><strong>Phone:</strong> {{ profile.phone }}</p>
-            <p><strong>Emergency Contact:</strong> {{ profile.emergency_contact }}</p>
+            <h5 class="section-title">👤 Personal Information</h5>
+            <p><span class="info-label">Date of Birth:</span> {{ profile.date_of_birth|date:"d M Y" }}</p>
+            <p><span class="info-label">Joining Date:</span> {{ profile.joining_date|date:"d M Y" }}</p>
+            <p><span class="info-label">National ID:</span> {{ profile.national_id }}</p>
+            <p><span class="info-label">Address:</span> {{ profile.address }}</p>
+            <p><span class="info-label">Phone:</span> {{ profile.phone }}</p>
+            <p><span class="info-label">Emergency Contact:</span> {{ profile.emergency_contact }}</p>
 
-            <h5 class="section-title">Contact</h5>
-            <p><strong>Office Email:</strong> {{ profile.office_email }}</p>
-            <p><strong>Login Email:</strong> {{ profile.user.email }}</p>
+            <h5 class="section-title">📬 Contact</h5>
+            <p><span class="info-label">Office Email:</span> {{ profile.office_email }}</p>
+            <p><span class="info-label">Login Email:</span> {{ profile.user.email }}</p>
 
-            <h5 class="section-title">About</h5>
-            <p><strong>Bio:</strong> {{ profile.bio|default:"No bio available." }}</p>
+            <h5 class="section-title">📄 About</h5>
+            <p class="text-justify"><span class="info-label">Bio:</span> {{ profile.bio|default:"No bio available." }}</p>
+            <p><span class="info-label">Skills:</span> {{ profile.skills|default:"No skills listed." }}</p>
+            <p><span class="info-label">Experience:</span> {{ profile.experience|default:"No experience listed." }}</p>
+            <p><span class="info-label">Education:</span> {{ profile.education|default:"No education details provided." }}</p>
+            <p><span class="info-label">Languages:</span> {{ profile.languages|default:"No languages specified." }}</p>
+            <p><span class="info-label">Hobbies:</span> {{ profile.hobbies|default:"No hobbies listed." }}</p>
+            <p><span class="info-label">Social Media:</span> {{ profile.social_media|default:"No social media links provided." }}</p>
+            <p><span class="info-label">Achievements:</span> {{ profile.achievements|default:"No achievements listed." }}</p>
+            <p><span class="info-label">Certifications:</span> {{ profile.certifications|default:"No certifications available." }}</p>
+            <p><span class="info-label">Interests:</span> {{ profile.interests|default:"No interests specified." }}</p>
+            <p><span class="info-label">Notes:</span> {{ profile.notes|default:"No additional notes." }}</p>
 
-            <h5 class="section-title">Status</h5>
-            <p><strong>Active:</strong> {{ profile.is_active|yesno:"Yes,No" }}</p>
-            <p><strong>Created At:</strong> {{ profile.created_at|date:"d M Y, H:i" }}</p>
-            <p><strong>Last Updated:</strong> {{ profile.last_updated|date:"d M Y, H:i" }}</p>
+            <h5 class="section-title">📊 Status</h5>
+            <p><span class="info-label">Active:</span> {{ profile.is_active|yesno:"Yes,No" }}</p>
+            <p><span class="info-label">Created At:</span> {{ profile.created_at|date:"d M Y, H:i" }}</p>
+            <p><span class="info-label">Last Updated:</span> {{ profile.last_updated|date:"d M Y, H:i" }}</p>
 
             {% if request.user == profile.user %}
-                <a href="{% url 'admin_profile_edit' %}" class="btn btn-primary mt-3 w-100">
+                <a href="{% url 'admin_profile_edit' %}" class="btn btn-primary mt-4 w-100">
                     <i class="fas fa-edit"></i> Edit Profile
                 </a>
             {% endif %}

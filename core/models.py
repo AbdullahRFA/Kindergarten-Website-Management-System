@@ -42,12 +42,23 @@ class AdminProfile(models.Model):
     emergency_contact = models.CharField(max_length=24, blank=True)
     photo = models.ImageField(upload_to='admin_photos/', blank=True, null=True)
     bio = models.TextField(blank=True)
+    skills = models.TextField(blank=True)
+    experience = models.TextField(blank=True)
+    education = models.TextField(blank=True)
+    languages = models.TextField(blank=True)
+    hobbies = models.TextField(blank=True)
+    social_media = models.TextField(blank=True)
+    achievements = models.TextField(blank=True)
+    certifications = models.TextField(blank=True)
+    interests = models.TextField(blank=True)
+    notes = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.full_name or self.user.username
+
 
 
 class TeaacherProfile(models.Model):
