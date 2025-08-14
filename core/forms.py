@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission
+from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile
 class StudentRegistrationForm(UserCreationForm):
     guardian_name = forms.CharField(
         required=False,
@@ -99,3 +99,17 @@ class StudentProfileForm(forms.ModelForm):
             'admission_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
         
+
+class TeacherProfileForm(forms.ModelForm):
+    class Meta:
+        model = TeaacherProfile
+        fields = [
+            'full_name', 'class_room', 'date_of_birth', 'address', 'phone',
+            'photo', 'qualification', 'experience_years'
+        ]
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'qualification': forms.TextInput(attrs={'class': 'form-control'}),
+            'experience_years': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+        }

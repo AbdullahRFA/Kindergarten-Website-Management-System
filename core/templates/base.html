@@ -14,7 +14,7 @@
       padding: 0;
     }
 
-    /* Fixed Navbar */
+    /* NAVBAR */
     .navbar {
       background-color: #f48fb1 !important;
       position: fixed;
@@ -23,75 +23,73 @@
       right: 0;
       z-index: 1030;
     }
-
     .navbar-brand {
       font-weight: bold;
       color: #ffffff !important;
     }
-
     .nav-link {
       color: #fff !important;
       font-weight: 500;
     }
 
-    /* Sidebar */
+    /* SIDEBAR */
     .sidebar {
-      background-color: #ffffff;
-      border-radius: 12px;
+      background: linear-gradient(180deg, #7c8fd6, #a7b8ea);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
       padding: 20px;
-      height: calc(100vh - 56px); /* subtract navbar height */
+      height: calc(100vh - 56px);
       position: fixed;
-      top: 56px; /* below navbar */
+      top: 56px;
       left: 0;
       width: 250px;
       overflow-y: auto;
+      border-top-right-radius: 10px;
     }
-
-    .profile-pic {
+    .profile_pic {
       width: 120px;
       height: 120px;
       border-radius: 50%;
       object-fit: cover;
-      margin-bottom: 10px;
+      border: 3px solid #fff;
+      background-color: #fff;
+      transition: transform 0.3s ease;
     }
-
-    .sidebar h5 {
-      font-weight: bold;
-      margin-bottom: 5px;
+    .profile_pic:hover {
+      transform: scale(1.05);
     }
-
-    .sidebar p {
-      margin-bottom: 15px;
-      color: #777;
-    }
-
     .sidebar a {
       display: block;
-      padding: 8px 0;
-      color: #333;
+      padding: 10px 15px;
+      color: #fff;
       text-decoration: none;
       border-radius: 6px;
-      transition: 0.2s;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin-bottom: 5px;
     }
-
     .sidebar a:hover {
-      background-color: #fce4ec;
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(4px);
+    }
+    .sidebar i {
+      width: 20px;
+      text-align: center;
     }
 
-    /* Main content */
+    /* MAIN CONTENT */
     .main-content {
-      margin-top: 56px; /* below navbar */
+      margin-top: 56px;  /* below navbar */
       margin-left: 250px; /* beside sidebar */
       padding: 20px;
-      min-height: calc(100vh - 56px - 50px); /* leave space for footer */
+      min-height: calc(100vh - 106px); /* navbar + footer */
+      transition: margin-left 0.3s ease;
     }
 
-    /* Footer */
+    /* FOOTER */
     footer {
-     
+      
       bottom: 0;
-      left: 0;
+      left: 250px;
       right: 0;
       height: 50px;
       background-color: #fff;
@@ -105,14 +103,13 @@
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-sm">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Kindergarten</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
         <span class="navbar-toggler-icon"></span>
       </button>
-
       <div class="collapse navbar-collapse" id="navbarContent">
         <ul class="navbar-nav me-auto">
           <li class="nav-item"><a class="nav-link" href="{% url 'homepage' %}">Home</a></li>
@@ -143,36 +140,61 @@
     </div>
   </nav>
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
+  {% if request.user.is_authenticated %}
   <div class="sidebar text-center">
-
-    
+    <!-- Profile Picture -->
     {% if request.user.role == "student" %}
-          {% if request.user.student_profile.photo %}
-          <img src="{{ request.user.student_profile.photo.url }}" alt="Profile Picture" class="profile-pic"/>
-        {% else %}
-          <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-pic"/>
-        {% endif %}
-
-        {% if request.user.is_authenticated %}
-          <h5>{{ request.user.get_full_name|default:request.user.username }}</h5>
-          <p>{{ request.user.role|title }}</p>
-        {% endif %}
-
-        <a href="{% url 'dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
-        <a href="{% url 'student_profile' %}"><i class="fas fa-home"></i> Profile</a>
-        <a href="{% url 'student_profile_and_edit' %}"><i class="fas fa-home"></i> Profile and Edit</a>
-        <a href="#"><i class="fas fa-tasks"></i> My Tasks</a>
-        <a href="#"><i class="fas fa-calendar-check"></i> Attendance</a>
-        <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
-        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+      {% if request.user.student_profile.photo %}
+        <img src="{{ request.user.student_profile.photo.url }}" alt="Profile Picture" class="profile_pic shadow-sm" />
+      {% else %}
+        <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile_pic shadow-sm" />
+      {% endif %}
+    {% elif request.user.role == "teacher" %}
+      {% if request.user.teacher_profile.photo %}
+        <img src="{{ request.user.teacher_profile.photo.url }}" alt="Profile Picture" class="profile_pic shadow-sm" />
+      {% else %}
+        <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile_pic shadow-sm" />
+      {% endif %}
+    {% elif request.user.role == "admin" %}
+      {% if request.user.admin_profile.photo %}
+        <img src="{{ request.user.admin_profile.photo.url }}" alt="Profile Picture" class="profile_pic shadow-sm" />
+      {% else %}
+        <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile_pic shadow-sm" />
+      {% endif %}
     {% endif %}
-      
-    
-    
-  </div>
 
-  <!-- Main content -->
+    <!-- Name & Role -->
+    <h5 class="mt-2 mb-0">{{ request.user.get_full_name|default:request.user.username }}</h5>
+    <p class="text-light small mb-3">{{ request.user.role|title }}</p>
+    <hr class="border-light">
+
+    <!-- Menu Links -->
+    {% if request.user.role == "student" %}
+      <a href="{% url 'dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
+      <a href="{% url 'student_profile' %}"><i class="fas fa-user me-2"></i> Profile</a>
+      <a href="#"><i class="fas fa-tasks me-2"></i> My Tasks</a>
+      <a href="#"><i class="fas fa-calendar-check me-2"></i> Attendance</a>
+      <a href="#"><i class="fas fa-file-alt me-2"></i> Reports</a>
+      <a href="#"><i class="fas fa-cog me-2"></i> Settings</a>
+    {% elif request.user.role == "teacher" %}
+      <a href="{% url 'dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
+      <a href="{% url 'teacher_profile' %}"><i class="fas fa-user me-2"></i> Profile</a>
+      <a href="#"><i class="fas fa-chalkboard-teacher me-2"></i> Classes</a>
+      <a href="#"><i class="fas fa-book me-2"></i> Subjects</a>
+      <a href="#"><i class="fas fa-file-alt me-2"></i> Reports</a>
+      <a href="#"><i class="fas fa-cog me-2"></i> Settings</a>
+    {% elif request.user.role == "admin" %}
+      <a href="{% url 'dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
+      <a href="{% url 'admin_profile' %}"><i class="fas fa-user-shield me-2"></i> Profile</a>
+      <a href="#"><i class="fas fa-users me-2"></i> Manage Users</a>
+      <a href="#"><i class="fas fa-chalkboard me-2"></i> Manage Classes</a>
+      <a href="#"><i class="fas fa-cogs me-2"></i> System Settings</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- MAIN CONTENT -->
   <div class="main-content">
     {% for msg in messages %}
       <div class="alert alert-info">{{ msg }}</div>
@@ -180,7 +202,7 @@
     {% block content %}{% endblock %}
   </div>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer>
     &copy; {{ now|date:"Y" }} Kindergarten School Management System
   </footer>

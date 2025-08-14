@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Teacher Profile{% endblock %}
+
+{% block content %}
+<style>
+    .profile-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        margin-top: 30px;
+    }
+    .profile-card {
+        width: 100%;
+        max-width: 600px;
+        border-radius: 15px;
+        overflow: hidden;
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease-in-out;
+    }
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .profile-header {
+        background: linear-gradient(135deg, #f48fb1, #ff6f91);
+        padding: 30px 20px;
+        text-align: center;
+        color: white;
+    }
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #fff;
+        margin-top: -75px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    .profile-pic:hover {
+        transform: scale(1.05);
+    }
+    .profile-body {
+        padding: 20px 30px;
+    }
+    .section-title {
+        font-weight: 600;
+        border-left: 4px solid #f48fb1;
+        padding-left: 8px;
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+    }
+    .profile-info p {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+    .btn-primary {
+        background-color: #f48fb1;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+    .btn-primary:hover {
+        background-color: #ff6f91;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="profile-wrapper">
+    <div class="profile-card">
+
+        <!-- Header -->
+        <div class="profile-header">
+            <h3 class="mb-3">{{ profile.full_name }}</h3>
+            <p class="mb-0">Teacher</p>
+        </div>
+
+        <!-- Photo -->
+        <div class="text-center">
+            {% if profile.photo %}
+                <img src="{{ profile.photo.url }}" alt="Profile Photo" class="profile-pic">
+            {% else %}
+                <img src="https://via.placeholder.com/150" alt="Profile Photo" class="profile-pic">
+            {% endif %}
+        </div>
+
+        <!-- Body -->
+        <div class="profile-body profile-info">
+            <h5 class="section-title">Personal Information</h5>
+            <p><strong>Class Room:</strong> {{ profile.class_room }}</p>
+            <p><strong>Date of Birth:</strong> {{ profile.date_of_birth|date:"d M Y" }}</p>
+            <p><strong>Address:</strong> {{ profile.address }}</p>
+            <p><strong>Phone:</strong> {{ profile.phone }}</p>
+
+            <h5 class="section-title mt-4">Professional Details</h5>
+            <p><strong>Qualification:</strong> {{ profile.qualification }}</p>
+            <p><strong>Experience:</strong> {{ profile.experience_years }} Years</p>
+
+            {% if request.user == profile.user %}
+                <a href="{% url 'teacher_profile_edit' %}" class="btn btn-primary mt-3 w-100">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
