@@ -1,175 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <title>{% block title %}Kindergarten SMS{% endblock %}</title>
-    <style>
-      body {
-        background: linear-gradient(to right, #fce4ec, #e3f2fd);
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
-      .navbar {
-        background-color: #f48fb1 !important;
-      }
-      .navbar-brand {
-        font-weight: bold;
-        color: #ffffff !important;
-      }
-      .nav-link {
-        color: #fff !important;
-        font-weight: 500;
-      }
-      .container {
-        margin-top: 20px;
-      }
-      .sidebar {
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-        height: 100%;
-      }
-      .profile-pic {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 10px;
-      }
-      .sidebar h5 {
-        font-weight: bold;
-        margin-bottom: 20px;
-      }
-      .sidebar a {
-        display: block;
-        padding: 8px 0;
-        color: #333;
-        text-decoration: none;
-        border-radius: 6px;
-        transition: 0.2s;
-      }
-      .sidebar a:hover {
-        background-color: #fce4ec;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Kindergarten</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <title>{% block title %}Kindergarten SMS{% endblock %}</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #fce4ec, #e3f2fd);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-        <div class="collapse navbar-collapse" id="navbarContent">
-          <!-- Left links -->
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'homepage' %}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'about' %}">About</a>
-            </li>
-          </ul>
-          <!-- Right dropdown -->
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="userDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                <i class="fas fa-user"></i>
-                {% if request.user.is_authenticated %}
-                  {{ request.user.username }} ({{ request.user.role|title }})
-                {% else %}
-                  Account
-                {% endif %}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                {% if user.is_authenticated %}
+    /* Fixed Navbar */
+    .navbar {
+      background-color: #f48fb1 !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1030;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      color: #ffffff !important;
+    }
+
+    .nav-link {
+      color: #fff !important;
+      font-weight: 500;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      height: calc(100vh - 56px); /* subtract navbar height */
+      position: fixed;
+      top: 56px; /* below navbar */
+      left: 0;
+      width: 250px;
+      overflow-y: auto;
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .sidebar h5 {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .sidebar p {
+      margin-bottom: 15px;
+      color: #777;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 8px 0;
+      color: #333;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+
+    .sidebar a:hover {
+      background-color: #fce4ec;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-top: 56px; /* below navbar */
+      margin-left: 250px; /* beside sidebar */
+      padding: 20px;
+      min-height: calc(100vh - 56px - 50px); /* leave space for footer */
+    }
+
+    /* Footer */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background-color: #fff;
+      text-align: center;
+      line-height: 50px;
+      font-size: 0.9rem;
+      color: #555;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Kindergarten</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'homepage' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user"></i>
+              {% if request.user.is_authenticated %}
+                {{ request.user.username }} ({{ request.user.role|title }})
+              {% else %}
+                Account
+              {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              {% if user.is_authenticated %}
                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
+              {% else %}
                 <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
                 <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
-                {% endif %}
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Page layout with sidebar -->
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3">
-          <div class="sidebar text-center">
-            <!-- Profile picture -->
-            {% if request.user.profile_picture %}
-              <img
-                src="{{ request.user.profile_picture.url }}"
-                alt="Profile Picture"
-                class="profile-pic"
-              />
-            {% else %}
-              <img
-                src="https://via.placeholder.com/120"
-                alt="Profile Picture"
-                class="profile-pic"
-              />
-            {% endif %}
-
-            <!-- Full name -->
-            {% if request.user.is_authenticated %}
-              <h5>{{ request.user.get_full_name|default:request.user.username }}</h5>
-              <p class="text-muted">{{ request.user.role|title }}</p>
-            {% endif %}
-
-            <!-- Features -->
-            <a href="{% url 'dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
-            <a href="#"><i class="fas fa-tasks"></i> My Tasks</a>
-            <a href="#"><i class="fas fa-calendar-check"></i> Attendance</a>
-            <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
-            <a href="#"><i class="fas fa-cog"></i> Settings</a>
-          </div>
-        </div>
-
-        <!-- Main content -->
-        <div class="col-md-9">
-          {% for msg in messages %}
-          <div class="alert alert-info">{{ msg }}</div>
-          {% endfor %}
-          {% block content %}{% endblock %}
-        </div>
+              {% endif %}
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
+  </nav>
 
-    <footer class="mt-4 text-center">
-      &copy; {{ now|date:"Y" }} Kindergarten School Management System
-    </footer>
+  <!-- Sidebar -->
+  <div class="sidebar text-center">
+    {% if request.user.profile_picture %}
+      <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="profile-pic"/>
+    {% else %}
+      <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-pic"/>
+    {% endif %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+    {% if request.user.is_authenticated %}
+      <h5>{{ request.user.get_full_name|default:request.user.username }}</h5>
+      <p>{{ request.user.role|title }}</p>
+    {% endif %}
+
+    <a href="{% url 'dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="#"><i class="fas fa-tasks"></i> My Tasks</a>
+    <a href="#"><i class="fas fa-calendar-check"></i> Attendance</a>
+    <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    {% for msg in messages %}
+      <div class="alert alert-info">{{ msg }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; {{ now|date:"Y" }} Kindergarten School Management System
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
