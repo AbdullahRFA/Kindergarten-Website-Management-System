@@ -148,8 +148,8 @@
 
     
     {% if request.user.role == "student" %}
-          {% if request.user.photo %}
-          <img src="{{ request.user.photo.url }}" alt="Profile Picture" class="profile-pic"/>
+          {% if request.user.student_profile.photo %}
+          <img src="{{ request.user.student_profile.photo.url }}" alt="Profile Picture" class="profile-pic"/>
         {% else %}
           <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-pic"/>
         {% endif %}
