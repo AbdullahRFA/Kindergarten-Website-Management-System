@@ -529,3 +529,40 @@ def apply_for_class(request, class_id):
 
     messages.success(request, f"You have applied for admission into {classroom.name}. Please wait for approval.")
     return redirect("student_profile")
+
+
+
+@login_required
+def admissions_manage_by_admin(request):
+    if not request.user.is_admin():
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    pending_students = StudentProfile.objects.filter(status="pending")
+    active_students = StudentProfile.objects.filter(status="active")
+    rejected_students = StudentProfile.objects.filter(status="rejected")
+
+    return render(request, "admin/manage_admissions.html", {
+        "pending_students": pending_students,
+        "active_students": active_students,
+        "rejected_students": rejected_students,
+    })
+    
+@login_required
+def update_admission_status_by_admin(request, student_id, action):
+    if not request.user.is_admin():
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    student = get_object_or_404(StudentProfile, id=student_id)
+
+    if action == "approve":
+        student.status = "active"
+        student.admission_fee_paid = True  # you can also trigger payment first
+        messages.success(request, f"{student.get_full_name()} has been approved!")
+    elif action == "reject":
+        student.status = "rejected"
+        messages.warning(request, f"{student.get_full_name()} has been rejected.")
+
+    student.save()
+    return redirect("admissions_manage_by_admin")

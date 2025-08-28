@@ -47,4 +47,7 @@ urlpatterns = [
     
     path("classes/", views.available_classes, name="available_classes"),
     path("classes/apply/<int:class_id>/", views.apply_for_class, name="apply_for_class"),
+    
+    path("admissions_manage_by_admin/", views.admissions_manage_by_admin, name="admissions_manage_by_admin"),
+    path("update_admission_status_by_admin/<int:student_id>/<str:action>/", views.update_admission_status_by_admin, name="update_admission_status_by_admin"),
 ]
