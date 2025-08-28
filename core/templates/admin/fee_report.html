@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Fee Report - {{ month }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Fee Report for {{ month }}</h2>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Monthly Fee</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in report %}
+                        <tr>
+                            <td>{{ row.student.get_full_name }}</td>
+                            <td>{{ row.class_name }}</td>
+                            <td>{{ row.monthly_fee }}</td>
+                            <td>
+                                {% if row.has_paid %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Not Paid</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No students found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

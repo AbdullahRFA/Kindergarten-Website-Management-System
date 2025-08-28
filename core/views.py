@@ -21,7 +21,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
-
+from django.utils.timezone import now
+from calendar import monthrange
 
 
 from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile, ClassRoom
@@ -623,3 +624,37 @@ def admin_fee_history(request):
 
     payments = PaymentTransaction.objects.select_related("student").order_by("-created_at")
     return render(request, "admin/fee_history.html", {"payments": payments})
+
+
+
+
+@login_required
+def fee_report_by_admin(request):
+    if not request.user.is_admin():
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    today = now().date()
+    start_of_month = today.replace(day=1)
+    end_of_month = today.replace(day=monthrange(today.year, today.month)[1])
+
+    students = StudentProfile.objects.filter(status="active").select_related("class_room")
+
+    report = []
+    for student in students:
+        has_paid = PaymentTransaction.objects.filter(
+            student=student,
+            status="success",
+            created_at__date__gte=start_of_month,
+            created_at__date__lte=end_of_month
+        ).exists()
+
+        report.append({
+            "student": student,
+            "class_name": student.class_room.name if student.class_room else "Not Assigned",
+            "monthly_fee": student.class_room.monthly_fee if student.class_room else 0,
+            "has_paid": has_paid
+        })
+
+    return render(request, "admin/fee_report.html", {"report": report, "month": today.strftime("%B %Y")})
+

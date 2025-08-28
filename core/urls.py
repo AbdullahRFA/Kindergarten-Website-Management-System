@@ -59,4 +59,6 @@ urlpatterns = [
     # Admin
     path("admin_fee-history/", views.admin_fee_history, name="admin_fee_history"),
     
+    path("fee_report_by_admin/", views.fee_report_by_admin, name="fee_report_by_admin"),
+    
 ]
