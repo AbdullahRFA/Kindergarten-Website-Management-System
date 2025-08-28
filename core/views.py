@@ -418,6 +418,8 @@ def view_submissions(request, homework_id):
     })
 
 
+# student/views.py
+
 @login_required
 def student_homeworks(request):
     if request.user.role != "student":
@@ -425,15 +427,34 @@ def student_homeworks(request):
         return redirect("dashboard")
 
     student = request.user.student_profile
-    homeworks = Homework.objects.filter(course__classroom=student.class_room).order_by("-created_at")
+
+    # Get the IDs of homeworks this student has already submitted
+    submitted_homework_ids = HomeworkSubmission.objects.filter(student=student).values_list('homework_id', flat=True)
+
+    # Fetch active homeworks for the student's class, excluding those they've already submitted
+    # Also, correct the "False" string to the boolean False
+    homeworks = Homework.objects.filter(
+        course__classroom=student.class_room,
+        status=True  # Assuming status=True means it's active/published by the teacher
+    ).exclude(
+        pk__in=submitted_homework_ids
+    ).order_by("-created_at")
 
     return render(request, "student/homework_list.html", {"homeworks": homeworks})
 
+
+# student/views.py
 
 @login_required
 def submit_homework(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     student_profile = request.user.student_profile
+
+    # Check if the student has already submitted
+    if HomeworkSubmission.objects.filter(homework=hw, student=student_profile).exists():
+        messages.error(request, 'You have already submitted this homework.')
+        return redirect('dashboard')
+
     if request.method == 'POST':
         form = SubmissionForm(request.POST, request.FILES)
         if form.is_valid():
@@ -441,11 +462,14 @@ def submit_homework(request, pk):
             sub.homework = hw
             sub.student = student_profile
             sub.save()
-            messages.success(request, 'Submitted')
+            # REMOVE THIS LINE: sub.homework.status = True
+            messages.success(request, 'Your homework has been submitted successfully!')
             return redirect('dashboard')
     else:
         form = SubmissionForm()
     return render(request, 'student/submit_homework.html', {'form': form, 'homework': hw})
+
+
 @login_required
 def initiate_payment(request):
     if request.method == 'POST':

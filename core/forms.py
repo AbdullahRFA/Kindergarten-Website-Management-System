@@ -49,7 +49,7 @@ class StudentRegistrationForm(UserCreationForm):
 class HomeworkForm(forms.ModelForm):
     class Meta:
         model = Homework
-        fields = ['course', 'title', 'description', 'due_date']
+        fields = ['course', 'title', 'description', 'due_date', 'status']
 
         widgets = {
             'course': forms.Select(attrs={'class': 'form-select'}),
@@ -66,7 +66,23 @@ class HomeworkForm(forms.ModelForm):
                 'class': 'form-control',
                 'type': 'date'
             }),
+            'status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+        
+        
+class SubmissionForm(forms.ModelForm):
+    class Meta:
+        model = HomeworkSubmission
+        fields = ('text', 'file')
+        widgets = {
+            'text': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write your submission'}),
+            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'text': 'Submission Text',
+            'file': 'Upload File',
+        }
+
         
 class CourseForm(forms.ModelForm):
     class Meta:
@@ -84,18 +100,7 @@ class CourseForm(forms.ModelForm):
         }
 
 
-class SubmissionForm(forms.ModelForm):
-    class Meta:
-        model = HomeworkSubmission
-        fields = ('text', 'file')
-        widgets = {
-            'text': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write your submission'}),
-            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        }
-        labels = {
-            'text': 'Submission Text',
-            'file': 'Upload File',
-        }
+
 
 
 class LeaveRequestForm(forms.ModelForm):

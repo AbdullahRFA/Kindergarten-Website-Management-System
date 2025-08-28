@@ -137,6 +137,7 @@ class Homework(models.Model):
     due_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    status = models.BooleanField(default=False)  # Active or Inactive
     def __str__(self):
         return self.title
 class HomeworkSubmission(models.Model):
