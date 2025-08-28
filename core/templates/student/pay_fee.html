@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Pay Monthly Fee{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Pay Monthly Fee</h2>
+
+    <div class="card shadow">
+        <div class="card-body text-center">
+            <h5>Class: {{ student.class_room.name }}</h5>
+            <h5>Monthly Fee: {{ amount }}</h5>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success mt-3">
+                    Pay Now
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

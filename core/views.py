@@ -583,21 +583,24 @@ def pay_monthly_fee(request):
 
     student = request.user.student_profile
 
-    if request.method == "POST":
-        provider = request.POST.get("provider")
-        amount = student.monthly_fee  
+    if not student.class_room:
+        messages.error(request, "You are not assigned to any class. Contact admin.")
+        return redirect("dashboard")
 
+    amount = student.class_room.monthly_fee  # ✅ Correct place
+
+    if request.method == "POST":
         tx = PaymentTransaction.objects.create(
             student=student,
             amount=amount,
-            provider=provider,
-            status="initiated"
+            provider="bkash",  # or user choice
+            status="success",  # you can make it "initiated" until confirmed
+            transaction_id=f"TXN-{random.randint(100000, 999999)}"
         )
+        messages.success(request, f"Monthly fee of {amount} paid successfully!")
+        return redirect("student_fee_history")
 
-        messages.success(request, f"Payment of {amount} initiated via {provider}. Transaction ID: {tx.id}")
-        return redirect("payment_status", tx_id=tx.id)
-
-    return render(request, "student/pay_monthly_fee.html", {"student": student})
+    return render(request, "student/pay_fee.html", {"student": student, "amount": amount})
 
 
 @login_required
