@@ -134,8 +134,8 @@
                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                 <li><a class="dropdown-item text-info" href="{% url 'change_password' %}"><i class="fas fa-sign-out-alt"></i> Change Password</a></li>
               {% else %}
-                <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
-                <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                <li><a class="dropdown-item" href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</a></li>
+                <li><a class="dropdown-item" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
               {% endif %}
             </ul>
           </li>
