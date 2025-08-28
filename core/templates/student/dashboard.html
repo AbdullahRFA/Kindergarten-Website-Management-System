@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <style>
   body {
-    background: #f1f8e9;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8f9fc;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   }
 
   .dashboard-card {
@@ -12,14 +13,21 @@
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     padding: 25px;
-    max-width: 500px;
-    margin: 40px auto;
+    margin-bottom: 25px;
+    transition: transform 0.2s;
   }
 
-  .dashboard-card h2 {
+  .dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboard-card h3 {
     color: #388e3c;
     font-weight: 600;
     margin-bottom: 20px;
+    border-bottom: 2px solid #e8f5e9;
+    padding-bottom: 10px;
   }
 
   .status-badge {
@@ -28,25 +36,361 @@
     border-radius: 20px;
     font-size: 0.95rem;
     font-weight: 500;
-    background-color: #c8e6c9;
-    color: #2e7d32;
+  }
+
+  .status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .status-active {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #388e3c;
+  }
+
+  .stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .quick-action {
+    background: #f1f8e9;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s;
+    height: 100%;
+  }
+
+  .quick-action:hover {
+    background: #e8f5e9;
+    transform: translateY(-2px);
+  }
+
+  .action-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #388e3c;
   }
 
   .no-profile {
     color: #757575;
     font-style: italic;
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  .homework-item {
+    border-left: 4px solid #4caf50;
+    padding-left: 15px;
+    margin-bottom: 15px;
+  }
+
+  .homework-title {
+    font-weight: 600;
+    color: #2e7d32;
+  }
+
+  .due-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .course-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fff;
+  }
+
+  .course-title {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .alert-info {
+    background-color: #e3f2fd;
+    border-color: #bbdefb;
+    color: #1565c0;
   }
 </style>
 
-<div class="container">
-  <div class="dashboard-card text-center">
-    <h2>🎓 Student Dashboard</h2>
-
-    {% if profile %}
-      <p>Status: <span class="status-badge">{{ profile.status }}</span></p>
-    {% else %}
-      <p class="no-profile">No profile found. Please complete your registration.</p>
-    {% endif %}
+<div class="container py-4">
+  <!-- Welcome Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="dashboard-card">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="mb-1">
+              🎓 Welcome, {{ request.user.get_full_name|default:request.user.username }}
+            </h2>
+            <p class="mb-0 text-muted">
+              Student Dashboard - Track your progress and activities
+            </p>
+          </div>
+          <div>
+            {% if profile %}
+            <span class="status-badge status-{{ profile.status }}">
+              {{ profile.status|title }}
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  {% if profile %}
+  <!-- Quick Stats -->
+  <div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="dashboard-card text-center">
+        <div class="stat-number">{{ homeworks_count }}</div>
+        <div class="stat-label">Total Homeworks</div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="dashboard-card text-center">
+        <div class="stat-number">{{ submissions_count }}</div>
+        <div class="stat-label">Your Submissions</div>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="dashboard-card text-center">
+        <div class="stat-number">{{ courses_count }}</div>
+        <div class="stat-label">Courses</div>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="dashboard-card text-center">
+        <div class="stat-number">{{ payments_count }}</div>
+        <div class="stat-label">Payments</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Class Information -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <div class="dashboard-card">
+        <h3>📚 Class Information</h3>
+        {% if profile.class_room %}
+        <div class="mb-3">
+          <strong>Class:</strong> {{ profile.class_room.name }} 
+          {% if profile.class_room.grade %}
+            (Grade {{ profile.class_room.grade }})
+          {% endif %}
+        </div>
+        <div class="mb-3">
+          <strong>Monthly Fee:</strong> {{ profile.class_room.monthly_fee }} Tk
+        </div>
+        <div class="mb-3">
+          <strong>Teacher:</strong>
+          {% if profile.class_room.teacher %}
+            {{ profile.class_room.teacher.get_full_name|default:profile.class_room.teacher.username }}
+          {% else %}
+            Not assigned
+          {% endif %}
+        </div>
+        <div>
+          <strong>Admission Date:</strong> {{ profile.admission_date|date:"M d, Y" }}
+        </div>
+        {% else %}
+        <p class="text-muted">You are not enrolled in any class yet.</p>
+        <a href="{% url 'available_classes' %}" class="btn btn-success">
+          Browse Available Classes
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="dashboard-card">
+        <h3>⚡ Quick Actions</h3>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <a href="{% url 'student_homeworks' %}" class="quick-action">
+              <div class="action-icon">📝</div>
+              <div>Homeworks</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'student_profile' %}" class="quick-action">
+              <div class="action-icon">👤</div>
+              <div>Profile</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'pay_monthly_fee' %}" class="quick-action">
+              <div class="action-icon">💳</div>
+              <div>Pay Fee</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'student_fee_history' %}" class="quick-action">
+              <div class="action-icon">📊</div>
+              <div>Fee History</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Recent Homeworks -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="dashboard-card">
+      <h3>📋 Recent Homeworks</h3>
+      {% if recent_homeworks %}
+        {% for homework in recent_homeworks %}
+        <div class="homework-item">
+          <div class="homework-title">{{ homework.title }}</div>
+          <div class="due-date">Due: {{ homework.due_date|date:"M d, Y" }}</div>
+          <div class="mt-2">
+            {% if homework.submitted %}
+              <span class="badge bg-success">Submitted</span>
+            {% else %}
+              <a href="{% url 'submit_homework' homework.id %}" class="btn btn-sm btn-primary">
+                Submit Now
+              </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        <div class="text-center mt-3">
+          <a href="{% url 'student_homeworks' %}" class="btn btn-outline-primary">
+            View All Homeworks
+          </a>
+        </div>
+      {% else %}
+        <p class="text-muted">No homeworks assigned yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+  <!-- Courses Overview -->
+  {% if profile.class_room %}
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="dashboard-card">
+        <h3>📖 Your Courses</h3>
+        {% if student_courses %}
+          <div class="row">
+            {% for course in student_courses %}
+            <div class="col-md-6 mb-3">
+              <div class="course-card">
+                <div class="course-title">{{ course.title }}</div>
+                <div class="text-muted small">
+                  Teacher: {{ course.teacher.get_full_name|default:course.teacher.username }}
+                </div>
+                <div class="mt-2">
+                  <a href="{% url 'course_details' course.id %}" class="btn btn-sm btn-outline-secondary">
+                    View Details
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% if courses_count > 4 %}
+          <div class="text-center mt-3">
+            <a href="#" class="btn btn-outline-primary">View All Courses</a>
+          </div>
+          {% endif %}
+        {% else %}
+          <p class="text-muted">No courses available for your class yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Payment Status -->
+  <div class="row">
+    <div class="col-12">
+      <div class="dashboard-card">
+        <h3>💰 Payment Status</h3>
+        {% if profile.admission_fee_paid %}
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle"></i> Admission fee paid successfully.
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle"></i> Admission fee pending.
+          Please complete your payment.
+        </div>
+        {% endif %}
+        
+        {% if last_payment %}
+        <div class="mt-3">
+          <strong>Last Payment:</strong> {{ last_payment.amount }} Tk on 
+          {{ last_payment.created_at|date:"M d, Y" }}
+        </div>
+        {% endif %}
+
+        <div class="mt-3">
+          <a href="{% url 'pay_monthly_fee' %}" class="btn btn-success me-2">
+            <i class="fas fa-credit-card"></i> Pay Monthly Fee
+          </a>
+          <a href="{% url 'student_fee_history' %}" class="btn btn-outline-primary">
+            <i class="fas fa-history"></i> View Payment History
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- No Profile Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="dashboard-card">
+        <div class="no-profile">
+          <i class="fas fa-user-graduate fa-3x mb-3"></i>
+          <h4>Profile Not Complete</h4>
+          <p>
+            You need to complete your student profile to access all features.
+          </p>
+          <a href="{% url 'student_profile_and_edit' %}" class="btn btn-primary">
+            <i class="fas fa-user-edit"></i> Complete Your Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- System Messages -->
+  {% if messages %}
+  <div class="row mt-4">
+    <div class="col-12">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

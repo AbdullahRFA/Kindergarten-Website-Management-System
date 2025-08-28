@@ -205,21 +205,64 @@ def dashboard(request):
             'courses': courses
         })
 
-    else:  # student
+    elif user.role == 'student':
         student_profile = getattr(user, 'student_profile', None)
-        return render(request, 'student/dashboard.html', {'profile': student_profile})
-    user = request.user
-    if user.role == 'admin':
-        pending = StudentProfile.objects.filter(status='pending').count()
-        total_students = StudentProfile.objects.filter(status='active').count()
-        total_teachers = User.objects.filter(role='teacher').count()
-        return render(request, 'admin/dashboard.html', {'pending': pending, 'total_students': total_students, 'total_teachers': total_teachers})
-    elif user.role == 'teacher':
-        courses = Course.objects.filter(teacher=user)
-        return render(request, 'teacher/dashboard.html', {'courses': courses})
-    else:
-        student_profile = getattr(user, 'student_profile', None)
-        return render(request, 'student/dashboard.html', {'profile': student_profile})
+        
+        # Initialize all variables with default values
+        homeworks_count = 0
+        submissions_count = 0
+        courses_count = 0
+        payments_count = 0
+        recent_homeworks = []
+        student_courses = []
+        last_payment = None
+        
+        if student_profile:
+            # Count homeworks for the student's class
+            homeworks_count = Homework.objects.filter(course__classroom=student_profile.class_room).count()
+            
+            # Count submissions by the student
+            submissions_count = HomeworkSubmission.objects.filter(student=student_profile).count()
+            
+            # Count courses in the student's class
+            courses_count = Course.objects.filter(classroom=student_profile.class_room).count()
+            
+            # Count successful payments
+            payments_count = PaymentTransaction.objects.filter(student=student_profile, status='success').count()
+            
+            # Get recent homeworks (last 5) with submission status
+            recent_homeworks = Homework.objects.filter(
+                course__classroom=student_profile.class_room
+            ).order_by('-created_at')[:5]
+            
+            # Check if student has submitted each homework
+            for homework in recent_homeworks:
+                homework.submitted = HomeworkSubmission.objects.filter(
+                    homework=homework, 
+                    student=student_profile
+                ).exists()
+            
+            # Get courses for the student's class
+            student_courses = Course.objects.filter(classroom=student_profile.class_room)[:4]
+            
+            # Get last successful payment
+            last_payment = PaymentTransaction.objects.filter(
+                student=student_profile, 
+                status='success'
+            ).order_by('-created_at').first()
+
+        return render(request, 'student/dashboard.html', {
+            'profile': student_profile,
+            'homeworks_count': homeworks_count,
+            'submissions_count': submissions_count,
+            'courses_count': courses_count,
+            'payments_count': payments_count,
+            'recent_homeworks': recent_homeworks,
+            'student_courses': student_courses,
+            'last_payment': last_payment,
+        })
+
+    
 
 
 @login_required
