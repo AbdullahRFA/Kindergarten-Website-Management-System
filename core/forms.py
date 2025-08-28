@@ -5,7 +5,8 @@ from .models import AdminProfile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 User = get_user_model()
-from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile, AdminProfile
+
+from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile, AdminProfile, ClassRoom
 
 
 class StudentRegistrationForm(UserCreationForm):
@@ -262,3 +263,18 @@ class TeacherCreateForm(UserCreationForm):
             )
         return user
     
+
+
+
+
+class ClassRoomForm(forms.ModelForm):
+    class Meta:
+        model = ClassRoom
+        fields = ['name', 'grade', 'curriculum', 'teacher', 'monthly_fee']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Class Name (e.g., Play, KG, One)'}),
+            'grade': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Grade (optional)'}),
+            'curriculum': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter curriculum details'}),
+            'teacher': forms.Select(attrs={'class': 'form-select'}),
+            'monthly_fee': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+        }

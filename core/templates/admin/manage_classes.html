@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Manage Classes{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Manage Classes</h2>
+    <a href="{% url 'add_class_by_admin' %}" class="btn btn-success mb-3">+ Add New Class</a>
+
+    <div class="card shadow">
+        <div class="card-body">
+            {% if classes %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Grade</th>
+                        <th>Teacher</th>
+                        <th>Monthly Fee</th>
+                        <th>Curriculum</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in classes %}
+                    <tr>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.grade }}</td>
+                        <td>{% if c.teacher %}{{ c.teacher.username }}{% else %}-{% endif %}</td>
+                        <td>{{ c.monthly_fee }}</td>
+                        <td>{{ c.curriculum|truncatewords:10 }}</td>
+                        <td>
+                            <a href="{% url 'edit_class_by_admin' c.id %}" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="text-muted">No classes found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

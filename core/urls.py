@@ -39,4 +39,9 @@ urlpatterns = [
     path("add_teacher_by_admin/", views.add_teacher_by_admin, name="add_teacher_by_admin"),
     path("manage_users_by_admin/", views.manage_users_by_admin, name="manage_users_by_admin"),
     path("edit_user_by_admin/<int:user_id>/edit/", views.edit_user_by_admin, name="edit_user_by_admin"),
+    
+    
+    path("manage_classes_by_admin/", views.manage_classes_by_admin, name="manage_classes_by_admin"),
+    path("add_class_by_admin/", views.add_class_by_admin, name="add_class_by_admin"),
+    path("edit_class_by_admin/<int:class_id>/edit/", views.edit_class_by_admin, name="edit_class_by_admin"),
 ]

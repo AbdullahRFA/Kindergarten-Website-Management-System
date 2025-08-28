@@ -21,8 +21,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
-from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile
-from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm, PasswordResetRequestForm, UserPasswordChangeForm
+
+
+
+from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile, ClassRoom
+from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm, PasswordResetRequestForm, UserPasswordChangeForm, ClassRoomForm
 
 
 def homepage(request):
@@ -422,4 +425,53 @@ def edit_user_by_admin(request, user_id):
         "profile": profile,
     })
 
-    # return render(request, "admin/edit_user.html", {"form": form, "user_obj": user})
+
+
+
+
+
+@login_required
+def manage_classes_by_admin(request):
+    if request.user.role != "admin":
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    classes = ClassRoom.objects.all()
+    return render(request, "admin/manage_classes.html", {"classes": classes})
+
+
+@login_required
+def add_class_by_admin(request):
+    if request.user.role != "admin":
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = ClassRoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Class added successfully!")
+            return redirect("manage_classes_by_admin")
+    else:
+        form = ClassRoomForm()
+
+    return render(request, "admin/add_class.html", {"form": form})
+
+
+@login_required
+def edit_class_by_admin(request, class_id):
+    if request.user.role != "admin":
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    classroom = get_object_or_404(ClassRoom, id=class_id)
+    if request.method == "POST":
+        form = ClassRoomForm(request.POST, instance=classroom)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Class updated successfully!")
+            return redirect("manage_classes_by_admin")
+    else:
+        form = ClassRoomForm(instance=classroom)
+
+    return render(request, "admin/edit_class.html", {"form": form, "classroom": classroom})

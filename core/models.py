@@ -19,8 +19,17 @@ class User(AbstractUser):
     
     
 class ClassRoom(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)   # Play, KG, One, Two…
     grade = models.CharField(max_length=32, blank=True)
+    curriculum = models.TextField(blank=True)             # Curriculum details
+    teacher = models.ForeignKey(
+        'User', 
+        on_delete=models.SET_NULL, 
+        null=True, blank=True, 
+        limit_choices_to={'role': 'teacher'}
+    )
+    monthly_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
     def __str__(self):
         return f"{self.grade} - {self.name}" if self.grade else self.name
     
