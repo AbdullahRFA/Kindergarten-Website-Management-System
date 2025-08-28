@@ -1,10 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+import random
+from datetime import datetime, timedelta
+from django.contrib.auth import update_session_auth_hash
+
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User as AuthUser
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import views as auth_views
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
+from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile
-from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm
+from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm, PasswordResetRequestForm, UserPasswordChangeForm
 
 
 def homepage(request):
@@ -28,6 +46,135 @@ def register_student(request):
     else:
         form = StudentRegistrationForm()
     return render(request, 'auth/register.html', {'form': form})
+
+def forgot_password(request):
+    if request.method == "POST":
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            User = get_user_model()
+            user = User.objects.filter(email=email).first()  # ✅ Correct
+            
+            if user:
+                send_otp(email)
+                messages.success(request, "OTP has been sent to your email.")
+                return redirect('verify_otp', email=email)
+            else:
+                messages.error(request, "❌ No user found with this email.")
+    else:
+        form = PasswordResetRequestForm()
+    return render(request, "password_reset_and_change/request_password_reset.html", {'form': form})
+
+
+
+# Temporary OTP Storage
+otp_storage = {}
+
+# Send OTP to Email
+def send_otp(email):
+    otp = random.randint(100000, 999999)
+    otp_storage[email] = {
+        'otp': otp,
+        'timestamp': datetime.now()
+    }
+
+    subject = "Password Reset OTP - KWMS"
+    message = f"Hello,\n\nYour OTP for password reset is: {otp}\n\nDo not share this OTP with anyone."
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+
+# Password Reset Request View
+def request_password_reset(request):
+    if request.method == "POST":
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            User = get_user_model()
+            
+            # Correct usage of .first()
+            user = User.objects.filter(email=email).first()
+            
+            if user:  # If user exists
+                send_otp(email)
+                messages.success(request, "OTP has been sent to your email.")
+                return redirect('verify_otp', email=email)
+            else:
+                messages.error(request, "❌ No user found with this email.")
+    else:
+        form = PasswordResetRequestForm()
+    
+    return render(request, "password_reset_and_change/request_password_reset.html", {'form': form})
+
+# OTP Verification View
+def verify_otp(request, email):
+    if request.method == "POST":
+        entered_otp = request.POST.get("otp")
+        data = otp_storage.get(email)
+
+        if data:
+            otp_valid = str(data['otp']) == entered_otp
+            otp_expired = datetime.now() > data['timestamp'] + timedelta(minutes=5)
+
+            if otp_valid and not otp_expired:
+                del otp_storage[email]
+                messages.success(request, "OTP verified successfully. Set a new password.")
+                return redirect('reset_password', email=email)
+            elif otp_expired:
+                del otp_storage[email]
+                messages.error(request, "OTP has expired. Please request a new one.")
+            else:
+                messages.error(request, "Invalid OTP. Please try again.")
+        else:
+            messages.error(request, "No OTP found for this email.")
+    return render(request, "password_reset_and_change/verify_otp.html", {'email': email})
+
+# Password Reset View
+def reset_password(request, email):
+    if request.method == "POST":
+        new_password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if new_password == confirm_password:
+            User = get_user_model()
+            try:
+                user = User.objects.get(email=email)
+                user.password = make_password(new_password)
+                user.save()
+                messages.success(request, "Password reset successfully. Please login.")
+                return redirect('login')
+            except User.DoesNotExist:
+                messages.error(request, "User not found.")
+        else:
+            messages.error(request, "Passwords do not match. Try again.")
+    return render(request, "password_reset_and_change/reset_password.html", {'email': email})
+
+
+
+
+
+@login_required(login_url='login_user')
+# @user_passes_test(check_admin)
+def change_password(request):
+    if request.method == 'POST':
+        form = UserPasswordChangeForm(data=request.POST, user=request.user)  # ✅ Corrected form initialization
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # ✅ Keep user logged in
+            messages.success(request, "Your password was successfully updated!")
+            return redirect('password_change_complete')  # ✅ Redirect instead of re-rendering
+    else:
+        form = UserPasswordChangeForm(user=request.user)
+
+    return render(request, 'password_reset_and_change/change_password.html', {'form': form})
+
+def password_change_complete(request):
+    return render(request, 'password_reset_and_change/password_change_complete.html')
+
+
+
+
+
+
+
 @login_required
 def dashboard(request):
     user = request.user

@@ -9,6 +9,15 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='auth/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('register/', views.register_student, name='register'),
+    
+    
+    path('forgot_password/', views.request_password_reset, name='forgot_password'),
+    path('verify_otp/<str:email>/', views.verify_otp, name='verify_otp'),
+    path('reset_password/<str:email>/', views.reset_password, name='reset_password'),
+    
+    path('change_password/', views.change_password, name='change_password'),
+    path('password_change_complete/', views.password_change_complete, name='password_change_complete'),
+    
     path('dashboard/', views.dashboard, name='dashboard'),
     
     path('student_profile/', views.student_profile, name='student_profile'),

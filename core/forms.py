@@ -1,6 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import RegexValidator
+from .models import AdminProfile
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordChangeForm
+User = get_user_model()
+
 from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile, AdminProfile
 class StudentRegistrationForm(UserCreationForm):
     guardian_name = forms.CharField(
@@ -205,3 +210,24 @@ class AdminProfileForm(forms.ModelForm):
             'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(
+        max_length=254,
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'})
+    )
+    label = "Registered Email"
+    
+    
+class UserPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Old Password'})
+    )
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter New Password'})
+    )
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm New Password'})
+    )
