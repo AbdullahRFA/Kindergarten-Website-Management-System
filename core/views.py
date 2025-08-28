@@ -501,3 +501,31 @@ def edit_class_by_admin(request, class_id):
         form = ClassRoomForm(instance=classroom)
 
     return render(request, "admin/edit_class.html", {"form": form, "classroom": classroom})
+
+
+
+@login_required
+def available_classes(request):
+    if not request.user.is_student():
+        messages.error(request, "Only students can view available classes.")
+        return redirect("dashboard")
+
+    classes = ClassRoom.objects.all()
+    return render(request, "student/available_classes.html", {"classes": classes})
+
+@login_required
+def apply_for_class(request, class_id):
+    if not request.user.is_student():
+        messages.error(request, "Only students can apply for classes.")
+        return redirect("dashboard")
+
+    student_profile, created = StudentProfile.objects.get_or_create(user=request.user)
+    classroom = get_object_or_404(ClassRoom, id=class_id)
+
+    student_profile.class_room = classroom
+    student_profile.status = "pending"   # ✅ wait for admin approval
+    student_profile.admission_fee_paid = False
+    student_profile.save()
+
+    messages.success(request, f"You have applied for admission into {classroom.name}. Please wait for approval.")
+    return redirect("student_profile")

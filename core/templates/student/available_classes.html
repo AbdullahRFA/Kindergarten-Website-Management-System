@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Available Classes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Available Classes</h2>
+
+    <div class="row">
+        {% for cls in classes %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ cls.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Grade:</strong> {{ cls.grade }}</p>
+                    <p><strong>Curriculum:</strong> {{ cls.curriculum|truncatewords:15 }}</p>
+                    <p><strong>Monthly Fee:</strong> {{ cls.monthly_fee }} Tk</p>
+                    <p><strong>Teacher:</strong> {{ cls.teacher.teacher_profile.full_name|default:cls.teacher.username }}</p>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'apply_for_class' cls.id %}" class="btn btn-success w-100">
+                        Apply for Admission
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

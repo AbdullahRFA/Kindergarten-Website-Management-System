@@ -44,4 +44,7 @@ urlpatterns = [
     path("manage_classes_by_admin/", views.manage_classes_by_admin, name="manage_classes_by_admin"),
     path("add_class_by_admin/", views.add_class_by_admin, name="add_class_by_admin"),
     path("edit_class_by_admin/<int:class_id>/edit/", views.edit_class_by_admin, name="edit_class_by_admin"),
+    
+    path("classes/", views.available_classes, name="available_classes"),
+    path("classes/apply/<int:class_id>/", views.apply_for_class, name="apply_for_class"),
 ]
