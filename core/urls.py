@@ -50,4 +50,7 @@ urlpatterns = [
     
     path("admissions_manage_by_admin/", views.admissions_manage_by_admin, name="admissions_manage_by_admin"),
     path("update_admission_status_by_admin/<int:student_id>/<str:action>/", views.update_admission_status_by_admin, name="update_admission_status_by_admin"),
+    
+    path("student/pay-fee/", views.pay_monthly_fee, name="pay_monthly_fee"),
+    
 ]

@@ -558,11 +558,43 @@ def update_admission_status_by_admin(request, student_id, action):
 
     if action == "approve":
         student.status = "active"
-        student.admission_fee_paid = True  # you can also trigger payment first
-        messages.success(request, f"{student.get_full_name()} has been approved!")
+        student.admission_fee_paid = True  
+
+        # 🔹 Assign monthly fee from class
+        if student.class_room:
+            student.monthly_fee = student.class_room.monthly_fee
+
+        student.save()
+        messages.success(request, f"{student.get_full_name()} approved! Monthly fee set to {student.monthly_fee}.")
+
     elif action == "reject":
         student.status = "rejected"
+        student.save()
         messages.warning(request, f"{student.get_full_name()} has been rejected.")
 
-    student.save()
-    return redirect("admissions_manage_by_admin")
+    return redirect("manage_admissions")
+
+
+@login_required
+def pay_monthly_fee(request):
+    if not request.user.is_student():
+        messages.error(request, "Only students can pay fees.")
+        return redirect("dashboard")
+
+    student = request.user.student_profile
+
+    if request.method == "POST":
+        provider = request.POST.get("provider")
+        amount = student.monthly_fee  
+
+        tx = PaymentTransaction.objects.create(
+            student=student,
+            amount=amount,
+            provider=provider,
+            status="initiated"
+        )
+
+        messages.success(request, f"Payment of {amount} initiated via {provider}. Transaction ID: {tx.id}")
+        return redirect("payment_status", tx_id=tx.id)
+
+    return render(request, "student/pay_monthly_fee.html", {"student": student})
