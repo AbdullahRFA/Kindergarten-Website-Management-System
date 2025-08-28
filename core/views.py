@@ -4,7 +4,7 @@ import random
 from datetime import datetime, timedelta
 from django.contrib.auth import update_session_auth_hash
 from django.utils import timezone
-
+from django.db.models import Sum, Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
 from django.conf import settings
@@ -184,13 +184,42 @@ def password_change_complete(request):
 def dashboard(request):
     user = request.user
     if user.role == 'admin':
+        # Basic counts
         pending = StudentProfile.objects.filter(status='pending').count()
         total_students = StudentProfile.objects.filter(status='active').count()
         total_teachers = User.objects.filter(role='teacher').count()
+        total_classes = ClassRoom.objects.count()
+        
+        # Additional statistics
+        total_courses = Course.objects.count()
+        total_homeworks = Homework.objects.count()
+        total_payments = PaymentTransaction.objects.filter(status='success').count()
+        
+        # Today's revenue
+        today = timezone.now().date()
+        revenue_today = PaymentTransaction.objects.filter(
+            status='success',
+            created_at__date=today
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        # Pending admissions (limited to 5 for display)
+        pending_admissions = StudentProfile.objects.filter(status='pending')[:5]
+        
+        # Recent activity (you might want to create an Activity model for this)
+        # For now, we'll use empty list
+        recent_activity = []
+        
         return render(request, 'admin/dashboard.html', {
             'pending': pending,
             'total_students': total_students,
-            'total_teachers': total_teachers
+            'total_teachers': total_teachers,
+            'total_classes': total_classes,
+            'total_courses': total_courses,
+            'total_homeworks': total_homeworks,
+            'total_payments': total_payments,
+            'revenue_today': revenue_today,
+            'pending_admissions': pending_admissions,
+            'recent_activity': recent_activity,
         })
 
     elif user.role == 'teacher':

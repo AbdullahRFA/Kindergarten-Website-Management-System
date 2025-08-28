@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <style>
   body {
-    background: #f5f5f5;
+    background: #f8f9fc;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
@@ -11,46 +12,320 @@
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    max-width: 600px;
-    margin: 40px auto;
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: transform 0.2s;
   }
 
-  .dashboard-card h2 {
+  .dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboard-card h3 {
     color: #2c3e50;
     font-weight: 600;
     margin-bottom: 20px;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 10px;
   }
 
-  .list-group-item {
-    font-size: 1.1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .stat-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
   }
 
-  .badge {
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    color: #6c757d;
     font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .bg-pending {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: white;
+  }
+
+  .bg-students {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+  }
+
+  .bg-teachers {
+    background: linear-gradient(135deg, #007bff 0%, #17a2b8 100%);
+    color: white;
+  }
+
+  .bg-classes {
+    background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+    color: white;
+  }
+
+  .quick-action {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s;
+    height: 100%;
+    border: 1px solid #e9ecef;
+  }
+
+  .quick-action:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .action-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+
+  .recent-item {
+    border-left: 4px solid #007bff;
+    padding-left: 15px;
+    margin-bottom: 15px;
+  }
+
+  .alert-pending {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+  }
+
+  .table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .badge-status {
+    font-size: 0.85rem;
+    padding: 0.5em 0.8em;
   }
 </style>
 
-<div class="container">
-  <div class="dashboard-card">
-    <h2 class="text-center">📊 Admin Dashboard</h2>
-    <ul class="list-group">
-      <li class="list-group-item">
-        Pending Admissions
-        <span class="badge bg-warning text-dark">{{ pending }}</span>
-      </li>
-      <li class="list-group-item">
-        Total Students
-        <span class="badge bg-success">{{ total_students }}</span>
-      </li>
-      <li class="list-group-item">
-        Total Teachers
-        <span class="badge bg-primary">{{ total_teachers }}</span>
-      </li>
-    </ul>
+<div class="container py-4">
+  <!-- Welcome Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="dashboard-card">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="mb-1">👑 Admin Dashboard</h2>
+            <p class="mb-0 text-muted">System Overview & Management</p>
+          </div>
+          <div>
+            <span class="badge bg-primary badge-status">Administrator</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Quick Stats -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stat-card bg-pending">
+        <div class="stat-number">{{ pending }}</div>
+        <div class="stat-label">Pending Admissions</div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stat-card bg-students">
+        <div class="stat-number">{{ total_students }}</div>
+        <div class="stat-label">Active Students</div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stat-card bg-teachers">
+        <div class="stat-number">{{ total_teachers }}</div>
+        <div class="stat-label">Teachers</div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stat-card bg-classes">
+        <div class="stat-number">{{ total_classes }}</div>
+        <div class="stat-label">Classes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions & Pending Admissions -->
+  <div class="row mb-4">
+    <div class="col-lg-8">
+      <div class="dashboard-card">
+        <h3>⏳ Pending Admissions</h3>
+        {% if pending_admissions %}
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Class Applied</th>
+                  <th>Applied Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for student in pending_admissions|slice:":5" %}
+                <tr>
+                  <td>{{ student.full_name|default:student.user.username }}</td>
+                  <td>
+                    {% if student.class_room %}
+                      {{ student.class_room.name }}
+                    {% else %}
+                      Not assigned
+                    {% endif %}
+                  </td>
+                  <td>{{ student.admission_date|date:"M d, Y" }}</td>
+                  <td>
+                    <a href="{% url 'update_admission_status_by_admin' student.id 'approve' %}" class="btn btn-sm btn-success me-1">
+                      Approve
+                    </a>
+                    <a href="{% url 'update_admission_status_by_admin' student.id 'reject' %}" class="btn btn-sm btn-danger">
+                      Reject
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center mt-3">
+            <a href="{% url 'admissions_manage_by_admin' %}" class="btn btn-outline-primary">
+              Manage All Admissions
+            </a>
+          </div>
+        {% else %}
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> No pending admissions. Great job!
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      <div class="dashboard-card">
+        <h3>⚡ Quick Actions</h3>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <a href="{% url 'manage_users_by_admin' %}" class="quick-action">
+              <div class="action-icon">👥</div>
+              <div>Manage Users</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'manage_classes_by_admin' %}" class="quick-action">
+              <div class="action-icon">🏫</div>
+              <div>Manage Classes</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'admissions_manage_by_admin' %}" class="quick-action">
+              <div class="action-icon">📋</div>
+              <div>Admissions</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'fee_report_by_admin' %}" class="quick-action">
+              <div class="action-icon">💰</div>
+              <div>Fee Reports</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'add_teacher_by_admin' %}" class="quick-action">
+              <div class="action-icon">➕</div>
+              <div>Add Teacher</div>
+            </a>
+          </div>
+          <div class="col-6 mb-3">
+            <a href="{% url 'add_class_by_admin' %}" class="quick-action">
+              <div class="action-icon">🏫</div>
+              <div>Add Class</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity & System Overview -->
+  <div class="row">
+    <div class="col-lg-6 mb-4">
+      <div class="dashboard-card">
+        <h3>📊 System Overview</h3>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <div class="text-center p-3 border rounded">
+              <div class="h4 mb-1">{{ total_courses }}</div>
+              <small class="text-muted">Total Courses</small>
+            </div>
+          </div>
+          <div class="col-6 mb-3">
+            <div class="text-center p-3 border rounded">
+              <div class="h4 mb-1">{{ total_homeworks }}</div>
+              <small class="text-muted">Homeworks</small>
+            </div>
+          </div>
+          <div class="col-6 mb-3">
+            <div class="text-center p-3 border rounded">
+              <div class="h4 mb-1">{{ total_payments }}</div>
+              <small class="text-muted">Payments</small>
+            </div>
+          </div>
+          <div class="col-6 mb-3">
+            <div class="text-center p-3 border rounded">
+              <div class="h4 mb-1">{{ revenue_today }}</div>
+              <small class="text-muted">Today's Revenue (Tk)</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+      <div class="dashboard-card">
+        <h3>📈 Recent Activity</h3>
+        {% if recent_activity %}
+          {% for activity in recent_activity %}
+          <div class="recent-item">
+            <div class="d-flex justify-content-between">
+              <strong>{{ activity.message }}</strong>
+              <small class="text-muted">{{ activity.timestamp|timesince }} ago</small>
+            </div>
+            <small class="text-muted">{{ activity.details }}</small>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted">No recent activity.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- System Messages -->
+  {% if messages %}
+  <div class="row mt-4">
+    <div class="col-12">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
