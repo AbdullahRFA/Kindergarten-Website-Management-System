@@ -2,60 +2,90 @@
 {% block title %}Teacher Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid">
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold mb-0">Welcome, {{ request.user.username }}</h2>
+            <h1 class="h3 mb-0 text-gray-800">Welcome, {{ request.user.get_full_name|default:request.user.username }}</h1>
             <p class="text-muted">Here's your teaching overview</p>
         </div>
         <div class="teacher-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-            <span class="fs-4">👨‍🏫</span>
+            {% if request.user.teacher_profile.photo %}
+                <img src="{{ request.user.teacher_profile.photo.url }}" alt="Profile" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <span class="fs-4">👨‍🏫</span>
+            {% endif %}
         </div>
     </div>
 
     <!-- Stats Overview Cards -->
     <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card shadow-sm border-0 h-100">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-subtitle text-muted">Assigned Classes</h6>
-                            <h3 class="fw-bold mt-2">{{ assigned_classes|length }}</h3>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Assigned Classes
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ assigned_classes|length }}</div>
                         </div>
-                        <div class="icon-container bg-primary bg-opacity-10 p-3 rounded">
-                            <i class="fas fa-chalkboard-teacher text-primary"></i>
+                        <div class="col-auto">
+                            <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card shadow-sm border-0 h-100">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-subtitle text-muted">Total Courses</h6>
-                            <h3 class="fw-bold mt-2">{{ courses|length }}</h3>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Courses
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ courses|length }}</div>
                         </div>
-                        <div class="icon-container bg-success bg-opacity-10 p-3 rounded">
-                            <i class="fas fa-book-open text-success"></i>
+                        <div class="col-auto">
+                            <i class="fas fa-book-open fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card shadow-sm border-0 h-100">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-subtitle text-muted">Total Students</h6>
-                            <h3 class="fw-bold mt-2">{{ total_students }}</h3>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Students
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_students }}</div>
                         </div>
-                        <div class="icon-container bg-info bg-opacity-10 p-3 rounded">
-                            <i class="fas fa-user-graduate text-info"></i>
+                        <div class="col-auto">
+                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Submissions
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_submissions }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tasks fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -63,110 +93,206 @@
         </div>
     </div>
 
-    <!-- Assigned Classes with Courses -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white py-3 border-0">
-            <h5 class="fw-bold mb-0 d-flex align-items-center">
-                <i class="fas fa-chalkboard-teacher text-primary me-2"></i>
-                My Classes & Courses
-            </h5>
-        </div>
-        <div class="card-body pt-0">
-            {% if assigned_classes %}
-                <div class="accordion" id="classesAccordion">
-                    {% for cls in assigned_classes %}
-                    <div class="accordion-item border-0 mb-3">
-                        <h2 class="accordion-header" id="heading{{ cls.id }}">
-                            <button class="accordion-button collapsed rounded shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ cls.id }}" aria-expanded="false" aria-controls="collapse{{ cls.id }}">
-                                <div class="d-flex justify-content-between align-items-center w-100 me-3">
-                                    <div>
-                                        <h6 class="mb-0 fw-bold">{{ cls.name }}{% if cls.grade %} (Grade {{ cls.grade }}){% endif %}</h6>
-                                        <small class="text-muted">{{ cls.curriculum|truncatewords:10 }}</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-primary me-2">Fee: {{ cls.monthly_fee }} Tk</span>
-                                        <span class="badge bg-secondary">{{ cls.course_set.count }} courses</span>
-                                    </div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Assigned Classes with Courses -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        My Classes & Courses
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if assigned_classes %}
+                        <div class="accordion" id="classesAccordion">
+                            {% for cls in assigned_classes %}
+                            <div class="card mb-3">
+                                <div class="card-header" id="heading{{ cls.id }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left text-decoration-none text-dark font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse{{ cls.id }}" aria-expanded="false" aria-controls="collapse{{ cls.id }}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    {{ cls.name }}{% if cls.grade %} (Grade {{ cls.grade }}){% endif %}
+                                                    <small class="d-block text-muted">{{ cls.curriculum|truncatewords:10 }}</small>
+                                                </div>
+                                                <div>
+                                                    <span class="badge bg-primary me-2">Fee: {{ cls.monthly_fee }} Tk</span>
+                                                    <span class="badge bg-secondary">{{ cls.course_set.count }} courses</span>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
                                 </div>
-                            </button>
-                        </h2>
-                        <div id="collapse{{ cls.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ cls.id }}" data-bs-parent="#classesAccordion">
-                            <div class="accordion-body pt-3">
-                                <h6 class="fw-bold mb-3">Courses in this class:</h6>
-                                
-                                {% if cls.course_set.all %}
-                                <div class="row">
-                                    {% for course in cls.course_set.all %}
-                                    <div class="col-md-6 mb-3">
-                                        <div class="card course-card h-100 shadow-sm">
-                                            <div class="card-body">
-                                                <h6 class="card-title fw-bold">{{ course.title }}</h6>
-                                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                                    <a href="{% url 'course_details' course.id%}" class="btn btn-sm btn-outline-primary">View Details</a>
-                                                    <div class="text-end">
-                                                        <small class="text-muted d-block">Teacher: {{ course.teacher.get_full_name|default:course.teacher.username }}</small>
+
+                                <div id="collapse{{ cls.id }}" class="collapse" aria-labelledby="heading{{ cls.id }}" data-parent="#classesAccordion">
+                                    <div class="card-body">
+                                        <h6 class="font-weight-bold mb-3">Courses in this class:</h6>
+                                        
+                                        {% if cls.course_set.all %}
+                                        <div class="row">
+                                            {% for course in cls.course_set.all %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="card h-100 border-left-primary">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title font-weight-bold text-primary">{{ course.title }}</h6>
+                                                        <p class="card-text text-muted small mb-2">Class: {{ course.classroom.name }}</p>
+                                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                                            <a href="{% url 'course_details' course.id %}" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-eye me-1"></i>View Details
+                                                            </a>
+                                                            <a href="{% url 'course_homeworks' course.id %}" class="btn btn-sm btn-outline-info">
+                                                                <i class="fas fa-tasks me-1"></i>Homeworks
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="text-center py-3">
+                                            <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No courses assigned to this class yet.</p>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <div class="d-flex justify-content-end mt-3">
+                                            <a href="{% url 'create_course' %}" class="btn btn-sm btn-outline-secondary me-2">
+                                                <i class="fas fa-plus me-1"></i>Add Course
+                                            </a>
+                                            <a href="{% url 'class_details' cls.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-info-circle me-1"></i>View Class Details
+                                            </a>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
-                                {% else %}
-                                <div class="text-center py-3">
-                                    <i class="fas fa-book fs-1 text-muted mb-2"></i>
-                                    <p class="text-muted">No courses assigned to this class yet.</p>
-                                </div>
-                                {% endif %}
-                                
-                                <div class="d-flex justify-content-end mt-3">
-                                    <a href="{% url 'create_course' %}" class="btn btn-sm btn-outline-secondary me-2">Add Course</a>
-                                    <a href="{% url 'class_details' cls.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No classes assigned yet.</p>
+                            <a href="{% url 'contact' %}" class="btn btn-primary">
+                                <i class="fas fa-envelope me-1"></i>Contact Admin
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Content -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <a href="{% url 'create_course' %}" class="btn btn-primary btn-icon-split mb-3">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <span class="text">Create New Course</span>
+                        </a>
+                        <a href="{% url 'teacher_homeworks' %}" class="btn btn-success btn-icon-split mb-3">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-tasks"></i>
+                            </span>
+                            <span class="text">Manage Homeworks</span>
+                        </a>
+                        <a href="{% url 'teacher_profile' %}" class="btn btn-info btn-icon-split mb-3">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <span class="text">Update Profile</span>
+                        </a>
                     </div>
-                    {% endfor %}
                 </div>
-            {% else %}
-                <div class="text-center py-4">
-                    <i class="fas fa-inbox fs-1 text-muted mb-2"></i>
-                    <p class="text-muted">No classes assigned yet.</p>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
                 </div>
-            {% endif %}
+                <div class="card-body">
+                    {% if recent_activity %}
+                        <div class="list-group list-group-flush">
+                            {% for activity in recent_activity %}
+                            <div class="list-group-item border-0 px-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-primary">
+                                            <i class="fas fa-{{ activity.icon }} text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">{{ activity.time }}</div>
+                                        <span class="font-weight-bold">{{ activity.message }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No recent activity</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- All Courses Section -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 border-0">
-            <h5 class="fw-bold mb-0 d-flex align-items-center">
-                <i class="fas fa-book-open text-success me-2"></i>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-book-open me-2"></i>
                 All My Courses
-            </h5>
+            </h6>
+            <a href="{% url 'create_course' %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> New Course
+            </a>
         </div>
-        <div class="card-body pt-0">
+        <div class="card-body">
             {% if courses %}
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="thead-light">
                             <tr>
                                 <th>Course Title</th>
                                 <th>Class</th>
                                 <th>Grade</th>
+                                <th>Students</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for course in courses %}
                             <tr>
-                                <td class="fw-bold">{{ course.title }}</td>
+                                <td class="font-weight-bold">{{ course.title }}</td>
                                 <td>{{ course.classroom.name }}</td>
                                 <td>{{ course.classroom.grade|default:"-" }}</td>
                                 <td>
+                                    <span class="badge bg-info text-white">
+                                        {{ course.enrollment_set.count }} students
+                                    </span>
+                                </td>
+                                <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{% url 'course_details' course.id %}" class="btn btn-outline-primary">View</a>
-                                        <a href="#" class="btn btn-outline-secondary">Materials</a>
+                                        <a href="{% url 'course_details' course.id %}" class="btn btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'course_homeworks' course.id %}" class="btn btn-info">
+                                            <i class="fas fa-tasks"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -176,8 +302,11 @@
                 </div>
             {% else %}
                 <div class="text-center py-4">
-                    <i class="fas fa-book fs-1 text-muted mb-2"></i>
-                    <p class="text-muted">No courses assigned yet.</p>
+                    <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No courses created yet.</p>
+                    <a href="{% url 'create_course' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Create Your First Course
+                    </a>
                 </div>
             {% endif %}
         </div>
@@ -185,51 +314,79 @@
 </div>
 
 <style>
-    .stat-card {
-        transition: transform 0.2s;
-        border-radius: 12px;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .course-card {
-        transition: transform 0.2s;
-        border-radius: 10px;
-        border: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .course-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
-    }
-    
-    .icon-container {
-        width: 50px;
-        height: 50px;
+    .icon-circle {
+        height: 2.5rem;
+        width: 2.5rem;
+        border-radius: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
     }
-    
+
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+
+    .btn-icon-split {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .btn-icon-split .icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-icon-split .text {
+        padding-left: 2.5rem;
+        display: inline-block;
+    }
+
     .teacher-avatar {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     }
-    
-    .accordion-button:not(.collapsed) {
-        background-color: #f8f9fa;
-        color: #000;
+
+    .card {
+        border: none;
+        border-radius: 0.35rem;
     }
-    
-    .accordion-button:focus {
-        box-shadow: none;
-        border-color: rgba(0,0,0,.125);
+
+    .card-header {
+        border-bottom: 1px solid #e3e6f0;
+        background-color: #f8f9fc;
     }
 </style>
 
-<!-- Bootstrap & Font Awesome -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Page level plugins -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Initialize accordion functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-activate the first accordion item
+        const firstAccordion = document.querySelector('.accordion .card:first-child .collapse');
+        if (firstAccordion) {
+            firstAccordion.classList.add('show');
+        }
+    });
+</script>
 {% endblock %}

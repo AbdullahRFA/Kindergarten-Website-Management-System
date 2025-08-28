@@ -223,15 +223,51 @@ def dashboard(request):
         })
 
     elif user.role == 'teacher':
-        # ✅ get all classes assigned to this teacher
+        # Get all classes assigned to this teacher
         assigned_classes = ClassRoom.objects.filter(teacher=user)
-
-        # ✅ get courses created for those classes
+        
+        # Get courses created by this teacher
         courses = Course.objects.filter(teacher=user)
-
+        
+        # Calculate total students across all assigned classes
+        total_students = 0
+        for cls in assigned_classes:
+            total_students += StudentProfile.objects.filter(class_room=cls, status='active').count()
+        
+        # Calculate pending submissions (homeworks not graded yet)
+        pending_submissions = 0
+        teacher_homeworks = Homework.objects.filter(created_by=user)
+        for homework in teacher_homeworks:
+            pending_submissions += HomeworkSubmission.objects.filter(
+                homework=homework, 
+                grade__isnull=True
+            ).count()
+        
+        # Get recent activity - simplified without timesince
+        recent_activity = []
+        recent_homeworks = Homework.objects.filter(created_by=user).order_by('-created_at')[:3]
+        for homework in recent_homeworks:
+            recent_activity.append({
+                'icon': 'tasks',
+                'time': homework.created_at.strftime("%b %d"),
+                'message': f'Created: {homework.title}'
+            })
+        
+        # Add course creation activity
+        recent_courses = Course.objects.filter(teacher=user).order_by('-id')[:2]
+        for course in recent_courses:
+            recent_activity.append({
+                'icon': 'book',
+                'time': 'Recent',
+                'message': f'Course: {course.title}'
+            })
+        
         return render(request, 'teacher/dashboard.html', {
             'assigned_classes': assigned_classes,
-            'courses': courses
+            'courses': courses,
+            'total_students': total_students,
+            'pending_submissions': pending_submissions,
+            'recent_activity': recent_activity,
         })
 
     elif user.role == 'student':
@@ -722,16 +758,13 @@ def edit_class_by_admin(request, class_id):
 
 
 
-@login_required
+
 def available_classes(request):
-    if not request.user.is_student():
-        messages.error(request, "Only students can view available classes.")
-        return redirect("dashboard")
 
     classes = ClassRoom.objects.all()
     return render(request, "student/available_classes.html", {"classes": classes})
 
-@login_required
+@login_required(login_url='login')
 def apply_for_class(request, class_id):
     if not request.user.is_student():
         messages.error(request, "Only students can apply for classes.")
