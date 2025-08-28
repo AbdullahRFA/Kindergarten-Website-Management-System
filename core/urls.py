@@ -53,4 +53,10 @@ urlpatterns = [
     
     path("student/pay-fee/", views.pay_monthly_fee, name="pay_monthly_fee"),
     
+    # Student
+    path("student_fee-history/", views.student_fee_history, name="student_fee_history"),
+
+    # Admin
+    path("admin_fee-history/", views.admin_fee_history, name="admin_fee_history"),
+    
 ]

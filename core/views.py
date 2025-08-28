@@ -598,3 +598,25 @@ def pay_monthly_fee(request):
         return redirect("payment_status", tx_id=tx.id)
 
     return render(request, "student/pay_monthly_fee.html", {"student": student})
+
+
+@login_required
+def student_fee_history(request):
+    if not request.user.is_student():
+        messages.error(request, "Only students can view fee history.")
+        return redirect("dashboard")
+
+    student = request.user.student_profile
+    payments = PaymentTransaction.objects.filter(student=student).order_by("-created_at")
+
+    return render(request, "student/fee_history.html", {"payments": payments, "student": student})
+
+
+@login_required
+def admin_fee_history(request):
+    if not request.user.is_admin():
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    payments = PaymentTransaction.objects.select_related("student").order_by("-created_at")
+    return render(request, "admin/fee_history.html", {"payments": payments})
