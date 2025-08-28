@@ -1,64 +1,50 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
 
 {% block content %}
-<style>
-  body {
-    background: #e3f2fd;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+<div class="container mt-4">
+    <h2>Welcome, {{ request.user.username }} 👨‍🏫</h2>
 
-  .dashboard-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    max-width: 600px;
-    margin: 40px auto;
-  }
+    <!-- Assigned Classes -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5>My Assigned Classes</h5>
+        </div>
+        <div class="card-body">
+            {% if assigned_classes %}
+                <ul class="list-group">
+                    {% for cls in assigned_classes %}
+                        <li class="list-group-item">
+                            <strong>{{ cls.name }}</strong> (Fee: {{ cls.monthly_fee }} Tk)
+                            <br>
+                            <small>{{ cls.curriculum|truncatewords:15 }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No classes assigned yet.</p>
+            {% endif %}
+        </div>
+    </div>
 
-  .dashboard-card h2 {
-    color: #1565c0;
-    font-weight: 600;
-    margin-bottom: 10px;
-  }
-
-  .dashboard-card h4 {
-    color: #1976d2;
-    margin-top: 20px;
-    font-weight: 500;
-  }
-
-  .course-list {
-    list-style: none;
-    padding-left: 0;
-  }
-
-  .course-list li {
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    background-color: #e3f2fd;
-    border-left: 5px solid #1976d2;
-    border-radius: 6px;
-    font-weight: 500;
-  }
-
-  .no-course {
-    font-style: italic;
-    color: #757575;
-  }
-</style>
-
-<div class="container">
-  <div class="dashboard-card">
-    <h2 class="text-center">📚 Teacher Dashboard</h2>
-    <h4>Your Courses</h4>
-    <ul class="course-list">
-      {% for c in courses %}
-        <li>📘 {{ c.title }}</li>
-      {% empty %}
-        <li class="no-course">No courses assigned</li>
-      {% endfor %}
-    </ul>
-  </div>
+    <!-- Courses -->
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h5>My Courses</h5>
+        </div>
+        <div class="card-body">
+            {% if courses %}
+                <ul class="list-group">
+                    {% for course in courses %}
+                        <li class="list-group-item">
+                            {{ course.title }} (Class: {{ course.classroom.name }})
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No courses assigned yet.</p>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

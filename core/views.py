@@ -185,6 +185,32 @@ def dashboard(request):
         pending = StudentProfile.objects.filter(status='pending').count()
         total_students = StudentProfile.objects.filter(status='active').count()
         total_teachers = User.objects.filter(role='teacher').count()
+        return render(request, 'admin/dashboard.html', {
+            'pending': pending,
+            'total_students': total_students,
+            'total_teachers': total_teachers
+        })
+
+    elif user.role == 'teacher':
+        # ✅ get all classes assigned to this teacher
+        assigned_classes = ClassRoom.objects.filter(teacher=user)
+
+        # ✅ get courses created for those classes
+        courses = Course.objects.filter(teacher=user)
+
+        return render(request, 'teacher/dashboard.html', {
+            'assigned_classes': assigned_classes,
+            'courses': courses
+        })
+
+    else:  # student
+        student_profile = getattr(user, 'student_profile', None)
+        return render(request, 'student/dashboard.html', {'profile': student_profile})
+    user = request.user
+    if user.role == 'admin':
+        pending = StudentProfile.objects.filter(status='pending').count()
+        total_students = StudentProfile.objects.filter(status='active').count()
+        total_teachers = User.objects.filter(role='teacher').count()
         return render(request, 'admin/dashboard.html', {'pending': pending, 'total_students': total_students, 'total_teachers': total_teachers})
     elif user.role == 'teacher':
         courses = Course.objects.filter(teacher=user)
