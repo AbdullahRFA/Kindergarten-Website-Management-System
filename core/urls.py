@@ -36,5 +36,6 @@ urlpatterns = [
     path('api/bus/locations/', views.bus_locations_json, name='bus_locations_json'),
     
     
-    path("add_teacher/", views.add_teacher, name="add_teacher"),
+    path("add_teacher_by_admin/", views.add_teacher_by_admin, name="add_teacher_by_admin"),
+    path("manage_users_by_admin/", views.manage_users_by_admin, name="manage_users_by_admin"),
 ]

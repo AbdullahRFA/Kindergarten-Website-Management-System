@@ -337,7 +337,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .forms import TeacherCreateForm
 
 @login_required
-def add_teacher(request):
+def add_teacher_by_admin(request):
     if request.user.role != "admin":   # only admins allowed
         messages.error(request, "Permission denied.")
         return redirect("dashboard")
@@ -354,3 +354,19 @@ def add_teacher(request):
 
 
 
+# Show all user (admin, teacher, student)
+@login_required
+def manage_users_by_admin(request):
+    if request.user.role != "admin":   # ✅ only admins allowed
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    admins = User.objects.filter(role="admin")
+    teachers = User.objects.filter(role="teacher")
+    students = User.objects.filter(role="student")
+
+    return render(request, "admin/manage_users.html", {
+        "admins": admins,
+        "teachers": teachers,
+        "students": students,
+    })
