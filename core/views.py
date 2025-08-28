@@ -329,3 +329,28 @@ def bus_locations_json(request):
         if loc:
             data.append({'bus': bus.identifier, 'lat': loc.lat, 'lon': loc.lon, 'time': loc.timestamp.isoformat()})
     return JsonResponse({'locations': data})
+
+
+
+# Add teacher by admin
+from django.contrib.admin.views.decorators import staff_member_required
+from .forms import TeacherCreateForm
+
+@login_required
+def add_teacher(request):
+    if request.user.role != "admin":   # only admins allowed
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = TeacherCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Teacher account created successfully!")
+            return redirect("dashboard")
+    else:
+        form = TeacherCreateForm()
+    return render(request, "admin/add_teacher.html", {"form": form})
+
+
+

@@ -188,6 +188,7 @@
     {% elif request.user.role == "admin" %}
       <a href="{% url 'dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
       <a href="{% url 'admin_profile' %}"><i class="fas fa-user-shield me-2"></i> Profile</a>
+      <a href="{% url 'add_teacher' %}"><i class="fas fa-users me-2"></i> Add Teacher</a>
       <a href="#"><i class="fas fa-users me-2"></i> Manage Users</a>
       <a href="#"><i class="fas fa-chalkboard me-2"></i> Manage Classes</a>
       <a href="#"><i class="fas fa-cogs me-2"></i> System Settings</a>

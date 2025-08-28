@@ -5,8 +5,9 @@ from .models import AdminProfile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 User = get_user_model()
-
 from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile, AdminProfile
+
+
 class StudentRegistrationForm(UserCreationForm):
     guardian_name = forms.CharField(
         required=False,
@@ -231,3 +232,33 @@ class UserPasswordChangeForm(PasswordChangeForm):
     new_password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm New Password'})
     )
+    
+    
+
+class TeacherCreateForm(UserCreationForm):
+    full_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name'})
+    )
+    class_room = forms.Select(attrs={'class': 'form-select'})
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')  # ✅ Login credentials
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.role = 'teacher'   # ✅ Assign teacher role
+        if commit:
+            user.save()
+            # create teacher profile automatically
+            TeaacherProfile.objects.create(
+                user=user,
+                full_name=self.cleaned_data.get('full_name')
+            )
+        return user
+    

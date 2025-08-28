@@ -34,4 +34,7 @@ urlpatterns = [
     path('payment/initiate/', views.initiate_payment, name='initiate_payment'),
     path('payment/callback/', views.payment_callback, name='payment_callback'),
     path('api/bus/locations/', views.bus_locations_json, name='bus_locations_json'),
+    
+    
+    path("add_teacher/", views.add_teacher, name="add_teacher"),
 ]
