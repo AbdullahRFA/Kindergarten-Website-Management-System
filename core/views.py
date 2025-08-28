@@ -370,3 +370,56 @@ def manage_users_by_admin(request):
         "teachers": teachers,
         "students": students,
     })
+    
+    
+# Edit user (admin, teacher, student) - only by admin
+@login_required
+def edit_user_by_admin(request, user_id):
+    if request.user.role != "admin":   # ✅ only admins can edit
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    user = get_object_or_404(User, id=user_id)
+
+    # ✅ Select correct profile + form depending on role
+    if user.role == "admin":
+        profile = getattr(user, 'admin_profile', None)
+        if not profile:
+            profile = AdminProfile.objects.create(user=user)
+        ProfileFormClass = AdminProfileForm
+
+    elif user.role == "teacher":    
+        profile = getattr(user, 'teacher_profile', None)
+        if not profile:
+            profile = TeaacherProfile.objects.create(user=user)
+        ProfileFormClass = TeacherProfileForm
+
+    elif user.role == "student":
+        profile = getattr(user, 'student_profile', None)
+        if not profile:
+            profile = StudentProfile.objects.create(user=user)
+        ProfileFormClass = StudentProfileForm
+
+    else:
+        messages.error(request, "Unknown role. Cannot edit this user.")
+        return redirect("manage_users")
+
+    # ✅ Handle POST/GET form
+    if request.method == "POST":
+        form = ProfileFormClass(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"{user.username}'s profile updated successfully!")
+            return redirect("manage_users")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ProfileFormClass(instance=profile)
+
+    return render(request, "admin/edit_user.html", {
+        "user_obj": user,
+        "form": form,
+        "profile": profile,
+    })
+
+    # return render(request, "admin/edit_user.html", {"form": form, "user_obj": user})

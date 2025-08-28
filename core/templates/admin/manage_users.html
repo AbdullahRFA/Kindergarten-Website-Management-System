@@ -15,8 +15,11 @@
                 <ul class="list-group">
                     {% for user in admins %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ user.username }} ({{ user.email }})
-                            <span class="badge bg-dark">Admin</span>
+                            <div>
+                                {{ user.username }} ({{ user.email }})
+                                <span class="badge bg-dark">Admin</span>
+                            </div>
+                            <a href="{% url 'edit_user_by_admin' user.id %}" class="btn btn-sm btn-warning">Edit</a>
                         </li>
                     {% endfor %}
                 </ul>
@@ -36,8 +39,11 @@
                 <ul class="list-group">
                     {% for user in teachers %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ user.username }} ({{ user.email }})
-                            <span class="badge bg-primary">Teacher</span>
+                            <div>
+                                {{ user.username }} ({{ user.email }})
+                                <span class="badge bg-primary">Teacher</span>
+                            </div>
+                            <a href="{% url 'edit_user_by_admin' user.id %}" class="btn btn-sm btn-warning">Edit</a>
                         </li>
                     {% endfor %}
                 </ul>
@@ -57,8 +63,11 @@
                 <ul class="list-group">
                     {% for user in students %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ user.username }} ({{ user.email }})
-                            <span class="badge bg-success">Student</span>
+                            <div>
+                                {{ user.username }} ({{ user.email }})
+                                <span class="badge bg-success">Student</span>
+                            </div>
+                            <a href="{% url 'edit_user_by_admin' user.id %}" class="btn btn-sm btn-warning">Edit</a>
                         </li>
                     {% endfor %}
                 </ul>

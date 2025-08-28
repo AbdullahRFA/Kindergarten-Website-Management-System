@@ -38,4 +38,5 @@ urlpatterns = [
     
     path("add_teacher_by_admin/", views.add_teacher_by_admin, name="add_teacher_by_admin"),
     path("manage_users_by_admin/", views.manage_users_by_admin, name="manage_users_by_admin"),
+    path("edit_user_by_admin/<int:user_id>/edit/", views.edit_user_by_admin, name="edit_user_by_admin"),
 ]
