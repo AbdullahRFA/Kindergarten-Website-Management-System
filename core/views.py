@@ -823,7 +823,7 @@ def update_admission_status_by_admin(request, student_id, action):
         student.save()
         messages.warning(request, f"{student.get_full_name()} has been rejected.")
 
-    return redirect("manage_admissions")
+    return redirect("admissions_manage_by_admin")
 
 
 @login_required
