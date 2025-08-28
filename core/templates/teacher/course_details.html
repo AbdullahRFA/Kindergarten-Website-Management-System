@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ course.title }} Details - School Management System</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #4e73df;
+        --secondary: #6c757d;
+        --success: #1cc88a;
+        --info: #36b9cc;
+        --warning: #f6c23e;
+        --danger: #e74a3b;
+        --light: #f8f9fc;
+        --dark: #5a5c69;
+      }
+
+      body {
+        background-color: #f8f9fc;
+        font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      .course-header {
+        background: linear-gradient(
+          135deg,
+          var(--success) 0%,
+          var(--info) 100%
+        );
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .info-card {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: transform 0.2s;
+      }
+
+      .info-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .info-card .card-header {
+        font-weight: 700;
+        border-bottom: 1px solid #e3e6f0;
+        background-color: #fff;
+      }
+
+      .homework-item {
+        border-left: 4px solid var(--success);
+        transition: all 0.2s;
+      }
+
+      .homework-item:hover {
+        background-color: #f8f9fc;
+        transform: translateX(5px);
+      }
+
+      .student-item {
+        border-left: 4px solid var(--info);
+        transition: all 0.2s;
+      }
+
+      .student-item:hover {
+        background-color: #f8f9fc;
+      }
+
+      .stat-badge {
+        font-size: 0.85rem;
+        padding: 0.5em 0.8em;
+      }
+
+      .action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+
+      .tab-content {
+        min-height: 300px;
+      }
+
+      .nav-tabs .nav-link {
+        color: var(--secondary);
+        font-weight: 600;
+      }
+
+      .nav-tabs .nav-link.active {
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+          <i class="fas fa-graduation-cap me-2"></i>EduManage
+        </a>
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link" href="{% url 'dashboard' %}">
+            <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+          </a>
+          {% if request.user.is_teacher %}
+          <a class="nav-link" href="{% url 'teacher_courses' %}">
+            <i class="fas fa-book me-1"></i> My Courses
+          </a>
+          {% endif %}
+          <a class="nav-link" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt me-1"></i> Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{% url 'dashboard' %}" class="text-decoration-none"
+              >Dashboard</a
+            >
+          </li>
+          <li class="breadcrumb-item">
+            <a
+              href="{% url 'class_details' course.classroom.id %}"
+              class="text-decoration-none"
+              >{{ course.classroom.name }}</a
+            >
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ course.title }}
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Course Header -->
+      <div class="course-header p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="mb-1">{{ course.title }}</h2>
+            <p class="mb-0">
+              Part of {{ course.classroom.name }}{% if course.classroom.grade %}
+              (Grade {{ course.classroom.grade }}){% endif %}
+            </p>
+          </div>
+          <div>
+            <span class="badge bg-light text-dark fs-6 p-2">
+              {% if enrollments.count == 1 %} 1 Student {% else %} {{ enrollments.count }} Students {% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <ul class="nav nav-tabs mb-4" id="courseTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="overview-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#overview"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-info-circle me-1"></i> Overview
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="homework-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#homework"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-tasks me-1"></i> Homework
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="students-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#students"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-user-graduate me-1"></i> Students
+          </button>
+        </li>
+        {% if request.user.is_teacher and request.user == course.teacher %}
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="manage-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#manage"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-cog me-1"></i> Manage
+          </button>
+        </li>
+        {% endif %}
+      </ul>
+
+      <!-- Tabs Content -->
+      <div class="tab-content" id="courseTabsContent">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="info-card card mb-4">
+                <div class="card-header py-3">
+                  <h5 class="m-0 font-weight-bold">Course Information</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-6 mb-3">
+                      <p class="mb-0 text-muted">Course Title</p>
+                      <p class="fw-bold">{{ course.title }}</p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                      <p class="mb-0 text-muted">Class</p>
+                      <p class="fw-bold">{{ course.classroom.name }}</p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-6 mb-3">
+                      <p class="mb-0 text-muted">Course Teacher</p>
+                      <p class="fw-bold">
+                        {% if course.teacher %} 
+                        {{course.teacher.get_full_name|default:course.teacher.username}} 
+                        {% else %}
+                         Not assigned 
+                         {% endif %}
+                      </p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                      <p class="mb-0 text-muted">Enrolled Students</p>
+                      <p class="fw-bold">{{ enrollments.count }}</p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-6 mb-3">
+                      <p class="mb-0 text-muted">Homeworks</p>
+                      <p class="fw-bold">{{ homeworks.count }}</p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                      <p class="mb-0 text-muted">Status</p>
+                      <p class="fw-bold">
+                        <span class="badge bg-success">Active</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Student Actions -->
+                  {% if request.user.is_student %}
+                  <div class="mt-4 pt-3 border-top">
+                    {% if is_enrolled %}
+                    <span class="badge bg-success p-2">
+                      <i class="fas fa-check me-1"></i> Enrolled
+                    </span>
+                    {% else %}
+                    <form
+                      method="post"
+                      action="{% url 'enroll_course' course.id %}"
+                    >
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Enroll in this Course
+                      </button>
+                    </form>
+                    {% endif %}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <!-- Teacher Info -->
+              {% if course.teacher and teacher_profile %}
+              <div class="info-card card mb-4">
+                <div class="card-header py-3">
+                  <h5 class="m-0 font-weight-bold">Course Teacher</h5>
+                </div>
+                <div class="card-body text-center">
+                  {% if teacher_profile.photo %}
+                  <img
+                    src="{{ teacher_profile.photo.url }}"
+                    class="rounded-circle mb-3"
+                    alt="Teacher Image"
+                    style="width: 100px; height: 100px; object-fit: cover"
+                  />
+                  {% else %}
+                  <div
+                    class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mb-3 mx-auto"
+                    style="width: 100px; height: 100px"
+                  >
+                    <i class="fas fa-user fa-2x"></i>
+                  </div>
+                  {% endif %}
+                  <h5>
+                    {{ teacher_profile.full_name|default:course.teacher.username}}
+                  </h5>
+                  <p class="text-muted">{{ course.title }} Teacher</p>
+                  {% if teacher_profile.qualification %}
+                  <p class="small">{{ teacher_profile.qualification }}</p>
+                  {% endif %} {% if teacher_profile.experience_years %}
+                  <p class="small">
+                    {{ teacher_profile.experience_years }} years of experience
+                  </p>
+                  {% endif %}
+                  <div class="d-flex justify-content-center">
+                    <a href="#" class="btn btn-outline-primary btn-sm me-2">
+                      <i class="fas fa-envelope"></i> Message
+                    </a>
+                    <a href="#" class="btn btn-outline-info btn-sm">
+                      <i class="fas fa-calendar"></i> Schedule
+                    </a>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+
+              <!-- Quick Stats -->
+              <div class="info-card card">
+                <div class="card-header py-3">
+                  <h5 class="m-0 font-weight-bold">Course Stats</h5>
+                </div>
+                <div class="card-body">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-3"
+                  >
+                    <span>Total Students</span>
+                    <span class="fw-bold">{{ enrollments.count }}</span>
+                  </div>
+
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-3"
+                  >
+                    <span>Assignments</span>
+                    <span class="fw-bold">{{ homeworks.count }}</span>
+                  </div>
+
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-3"
+                  >
+                    <span>Avg. Completion</span>
+                    <span class="fw-bold">78%</span>
+                  </div>
+
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <span>Active Since</span>
+                    <span class="fw-bold"
+                      >{{ course.classroom.created_at|date:"MY"|default:"Recent" }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Homework Tab -->
+        <div class="tab-pane fade" id="homework" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4>Course Assignments</h4>
+            {% if request.user.is_teacher and request.user == course.teacher %}
+            <a
+              href="{% url 'create_homework' course.id %}"
+              class="btn btn-primary"
+            >
+              <i class="fas fa-plus me-1"></i> Create Homework
+            </a>
+            {% endif %}
+          </div>
+
+          {% if homeworks %}
+          <div class="list-group">
+            {% for homework in homeworks %}
+            <div class="list-group-item homework-item mb-2">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ homework.title }}</h5>
+                <small class="text-muted"
+                  >Due: {{ homework.due_date|date:"M d, Y" }}</small
+                >
+              </div>
+              <p class="mb-2">{{ homework.description|truncatewords:30 }}</p>
+              <div
+                class="d-flex justify-content-between align-items-center mt-2"
+              >
+                <div>
+                  <span
+                    class="badge {% if homework.due_date < now %}bg-danger{% else %}bg-info{% endif %} me-1"
+                  >
+                    {% if homework.due_date < now %}Overdue{% else %}Active
+                    {% endif %}
+                  </span>
+                  <span class="badge bg-secondary"
+                    >Created: {{ homework.created_at|date:"M d, Y" }}</span
+                  >
+                </div>
+                <div>
+                  <a href="#" class="btn btn-sm btn-outline-primary me-1"
+                    >View Details</a
+                  >
+                  {% if request.user.is_student %}
+                  <a
+                    href="{% url 'submit_homework' homework.id %}"
+                    class="btn btn-sm btn-outline-success"
+                    >Submit</a
+                  >
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <i class="fas fa-tasks fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted">No assignments yet</h5>
+            <p class="text-muted">
+              There are no homework assignments for this course.
+            </p>
+            {% if request.user.is_teacher and request.user == course.teacher %}
+            <a
+              href="{% url 'create_homework' course.id %}"
+              class="btn btn-primary mt-2"
+            >
+              <i class="fas fa-plus me-1"></i> Create First Assignment
+            </a>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Students Tab -->
+        <div class="tab-pane fade" id="students" role="tabpanel">
+          <h4 class="mb-4">Enrolled Students ({{ enrollments.count }})</h4>
+
+          {% if enrollments %}
+          <div class="row">
+            {% for enrollment in enrollments %}
+            <div class="col-md-6 col-lg-4 mb-3">
+              <div class="card student-item">
+                <div class="card-body">
+                  <div class="d-flex align-items-center">
+                    {% if enrollment.student.photo %}
+                    <img
+                      src="{{ enrollment.student.photo.url }}"
+                      class="rounded-circle me-3"
+                      alt="Student Image"
+                      style="width: 50px; height: 50px; object-fit: cover"
+                    />
+                    {% else %}
+                    <div
+                      class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                      style="width: 50px; height: 50px"
+                    >
+                      <i class="fas fa-user text-white"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                      <h6 class="mb-0">
+                        {{
+                        enrollment.student.full_name|default:enrollment.student.user.username
+                        }}
+                      </h6>
+                      <small class="text-muted"
+                        >Enrolled: {{ enrollment.enrolled_at|date:"M d, Y"
+                        }}</small
+                      >
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <div class="d-flex justify-content-between small">
+                      <span>Assignments Completed</span>
+                      <span>12/15</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 5px">
+                      <div
+                        class="progress-bar bg-success"
+                        style="width: 80%"
+                      ></div>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                      <span>Average Grade</span>
+                      <span>85%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <i class="fas fa-user-graduate fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted">No students enrolled</h5>
+            <p class="text-muted">
+              There are no students enrolled in this course yet.
+            </p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Manage Tab (Teacher Only) -->
+        {% if request.user.is_teacher and request.user == course.teacher %}
+        <div class="tab-pane fade" id="manage" role="tabpanel">
+          <h4 class="mb-4">Course Management</h4>
+
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <div class="info-card card h-100">
+                <div class="card-header">
+                  <h5 class="m-0">Course Actions</h5>
+                </div>
+                <div class="card-body">
+                  <div class="d-grid gap-2">
+                    <a href="#" class="btn btn-outline-primary">
+                      <i class="fas fa-edit me-2"></i> Edit Course Details
+                    </a>
+                    <a
+                      href="{% url 'create_homework' course.id %}"
+                      class="btn btn-outline-success"
+                    >
+                      <i class="fas fa-tasks me-2"></i> Create Assignment
+                    </a>
+                    <a href="#" class="btn btn-outline-info">
+                      <i class="fas fa-chart-bar me-2"></i> View Analytics
+                    </a>
+                    <a href="#" class="btn btn-outline-warning">
+                      <i class="fas fa-bell me-2"></i> Send Announcement
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+              <div class="info-card card h-100">
+                <div class="card-header">
+                  <h5 class="m-0">Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <small class="text-muted">Student Engagement</small>
+                    <div class="progress mb-2" style="height: 10px">
+                      <div
+                        class="progress-bar bg-success"
+                        style="width: 78%"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <small class="text-muted">Assignment Completion</small>
+                    <div class="progress mb-2" style="height: 10px">
+                      <div
+                        class="progress-bar bg-info"
+                        style="width: 65%"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <small class="text-muted">Average Grade</small>
+                    <div class="progress mb-2" style="height: 10px">
+                      <div
+                        class="progress-bar bg-primary"
+                        style="width: 85%"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                      <i class="fas fa-download me-1"></i> Export Grades
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Activate the first tab
+      const firstTabEl = document.querySelector(
+        "#courseTabs button:first-child"
+      );
+      const firstTab = new bootstrap.Tab(firstTabEl);
+      firstTab.show();
+    </script>
+  </body>
+</html>

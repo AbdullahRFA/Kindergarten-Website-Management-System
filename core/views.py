@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from django.contrib.auth import update_session_auth_hash
 
 
@@ -25,7 +25,7 @@ from django.utils.timezone import now
 from calendar import monthrange
 
 
-from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile, ClassRoom
+from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile, ClassRoom, Enrollment
 
 from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm, PasswordResetRequestForm, UserPasswordChangeForm, ClassRoomForm, CourseForm
 
@@ -793,3 +793,75 @@ def class_details(request, class_id):
     }
     
     return render(request, 'teacher/class_details.html', context)
+
+
+
+@login_required
+def enroll_course(request, course_id):
+    if not request.user.is_student():
+        messages.error(request, "Only students can enroll in courses.")
+        return redirect('dashboard')
+    
+    course = get_object_or_404(Course, id=course_id)
+    student_profile = getattr(request.user, 'student_profile', None)
+    
+    if not student_profile:
+        messages.error(request, "Student profile not found.")
+        return redirect('dashboard')
+    
+    # Check if student is already enrolled
+    if Enrollment.objects.filter(student=student_profile, course=course).exists():
+        messages.warning(request, "You are already enrolled in this course.")
+        return redirect('course_details', course_id=course.id)
+    
+    # Create enrollment
+    Enrollment.objects.create(student=student_profile, course=course)
+    messages.success(request, f"You have successfully enrolled in {course.title}.")
+    
+    return redirect('teacher/course_details', course_id=course.id)
+
+@login_required
+def course_details(request, course_id):
+    # Get the course object or return 404
+    course = get_object_or_404(Course, id=course_id)
+    
+    # Check if user has permission to view this course
+    if request.user.role == 'teacher' and course.teacher != request.user:
+        messages.error(request, "You don't have permission to view this course.")
+        return redirect('dashboard')
+    
+    # Students can only view courses in their class
+    if request.user.role == 'student':
+        student_profile = getattr(request.user, 'student_profile', None)
+        if not student_profile or student_profile.class_room != course.classroom:
+            messages.error(request, "You don't have permission to view this course.")
+            return redirect('dashboard')
+    
+    # Get all homeworks for this course
+    homeworks = Homework.objects.filter(course=course).order_by('-created_at')
+    
+    # Get all enrollments for this course
+    enrollments = Enrollment.objects.filter(course=course).select_related('student')
+    
+    # Get teacher profile if available
+    teacher_profile = None
+    if course.teacher:
+        teacher_profile = getattr(course.teacher, 'teacher_profile', None)
+    
+    # Check if current student is enrolled
+    is_enrolled = False
+    if request.user.role == 'student':
+        student_profile = getattr(request.user, 'student_profile', None)
+        if student_profile:
+            is_enrolled = Enrollment.objects.filter(student=student_profile, course=course).exists()
+    
+    context = {
+        'course': course,
+        'homeworks': homeworks,
+        'enrollments': enrollments,
+        'teacher_profile': teacher_profile,
+        'is_enrolled': is_enrolled,
+        'now': timezone,  # Add current time for homework due date comparison
+    }
+    
+    return render(request, 'teacher/course_details.html', context)

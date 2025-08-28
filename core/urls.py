@@ -35,10 +35,10 @@ urlpatterns = [
     path("teacher/courses", views.teacher_courses, name="teacher_courses"),
 
     # Homework Management for Teachers 
-    path("teacher/homework/create/", views.create_homework, name="create_homework"),
-    path("teacher/course_homeworks<int:course_id>", views.course_homeworks, name="course_homeworks"),
-    path("teacher/teacher_homeworks", views.teacher_homeworks, name="teacher_homeworks"),
-    path("teacher/view_submissions", views.view_submissions, name="view_submissions"),
+    path("teacher/homework/create/<int:course_id>", views.create_homework, name="create_homework"),
+    path("teacher/course_homeworks/<int:course_id>", views.course_homeworks, name="course_homeworks"),
+    path("teacher/teacher_homeworks/", views.teacher_homeworks, name="teacher_homeworks"),
+    path("teacher/view_submissions/", views.view_submissions, name="view_submissions"),
     
     # Homework Management for Students
     path("student/homework/", views.student_homeworks, name="student_homeworks"),
@@ -76,6 +76,10 @@ urlpatterns = [
     
     path("fee_report_by_admin/", views.fee_report_by_admin, name="fee_report_by_admin"),
     
+    
+    
     path("class/<int:class_id>/details/", views.class_details, name="class_details"),
+    path("course/<int:course_id>/details/", views.course_details, name="course_details"),
+    path("course/<int:course_id>/enroll/", views.enroll_course, name="enroll_course"),
     
 ]

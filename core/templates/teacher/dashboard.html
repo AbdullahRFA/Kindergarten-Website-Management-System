@@ -102,7 +102,7 @@
                                             <div class="card-body">
                                                 <h6 class="card-title fw-bold">{{ course.title }}</h6>
                                                 <div class="d-flex justify-content-between align-items-center mt-3">
-                                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                                    <a href="{% url 'course_details' course.id%}" class="btn btn-sm btn-outline-primary">View Details</a>
                                                     <div class="text-end">
                                                         <small class="text-muted d-block">Teacher: {{ course.teacher.get_full_name|default:course.teacher.username }}</small>
                                                     </div>
@@ -120,7 +120,7 @@
                                 {% endif %}
                                 
                                 <div class="d-flex justify-content-end mt-3">
-                                    <a href="#" class="btn btn-sm btn-outline-secondary me-2">Add Course</a>
+                                    <a href="{% url 'create_course' %}" class="btn btn-sm btn-outline-secondary me-2">Add Course</a>
                                     <a href="{% url 'class_details' cls.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
                                 </div>
                             </div>
@@ -165,7 +165,7 @@
                                 <td>{{ course.classroom.grade|default:"-" }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="#" class="btn btn-outline-primary">View</a>
+                                        <a href="{% url 'course_details' course.id %}" class="btn btn-outline-primary">View</a>
                                         <a href="#" class="btn btn-outline-secondary">Materials</a>
                                     </div>
                                 </td>

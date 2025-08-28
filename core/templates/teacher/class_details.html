@@ -219,7 +219,7 @@
                                                 <span class="badge bg-info text-dark me-1">Active</span>
                                             </div>
                                             <div>
-                                                <a href="#" class="btn btn-sm btn-outline-primary me-1">View Details</a>
+                                                <a href="{% url 'course_details' course.id%}" class="btn btn-sm btn-outline-primary me-1">View Details</a>
                                                 {% if request.user.is_teacher and request.user == course.teacher %}
                                                 <a href="#" class="btn btn-sm btn-outline-secondary">Manage</a>
                                                 {% endif %}
