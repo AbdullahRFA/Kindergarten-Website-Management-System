@@ -36,9 +36,10 @@ urlpatterns = [
 
     # Homework Management for Teachers 
     path("teacher/homework/create/<int:course_id>", views.create_homework, name="create_homework"),
-    path("teacher/course_homeworks/<int:course_id>", views.course_homeworks, name="course_homeworks"),
+
+    path("course/<int:course_id>/homeworks/", views.course_homeworks, name="course_homeworks"),
     path("teacher/teacher_homeworks/", views.teacher_homeworks, name="teacher_homeworks"),
-    path("teacher/view_submissions/", views.view_submissions, name="view_submissions"),
+    path("teacher/view_submissions/<int:homework_id>", views.view_submissions, name="view_submissions"),
     
     # Homework Management for Students
     path("student/homework/", views.student_homeworks, name="student_homeworks"),

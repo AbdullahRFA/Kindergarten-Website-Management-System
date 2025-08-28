@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from django.contrib.auth import update_session_auth_hash
-
+from django.utils import timezone
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
@@ -357,17 +357,40 @@ def create_homework(request, course_id=None):
 
 @login_required
 def course_homeworks(request, course_id):
-    if request.user.role != 'teacher':
-        messages.error(request, "Permission denied.")
-        return redirect("dashboard")
-
-    course = get_object_or_404(Course, id=course_id, teacher=request.user)
-    homeworks = Homework.objects.filter(course=course).order_by("-created_at")
-
-    return render(request, "teacher/course_homeworks.html", {
-        "course": course,
-        "homeworks": homeworks
-    })
+    # Get the course object or return 404
+    course = get_object_or_404(Course, id=course_id)
+    
+    # Check if user has permission to view this course's homeworks
+    if request.user.role != 'teacher' or course.teacher != request.user:
+        messages.error(request, "You don't have permission to view these homeworks.")
+        return redirect('dashboard')
+    
+    # Get all homeworks for this course
+    homeworks = Homework.objects.filter(course=course).order_by('-created_at')
+    
+    # Get submission counts for each homework and calculate total submissions
+    total_submissions = 0
+    active_homeworks_count = 0
+    now = timezone.now()
+    
+    for homework in homeworks:
+        homework.submission_count = HomeworkSubmission.objects.filter(homework=homework).count()
+        homework.graded_count = HomeworkSubmission.objects.filter(homework=homework, grade__isnull=False).count()
+        total_submissions += homework.submission_count
+        
+        # Check if homework is active (not overdue)
+        if homework.due_date >= now.date():
+            active_homeworks_count += 1
+    
+    context = {
+        'course': course,
+        'homeworks': homeworks,
+        'now': now,
+        'total_submissions': total_submissions,
+        'active_homeworks_count': active_homeworks_count,
+    }
+    
+    return render(request, 'teacher/course_homeworks.html', context)
 
 
 
