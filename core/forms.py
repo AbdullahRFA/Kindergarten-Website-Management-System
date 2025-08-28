@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 User = get_user_model()
 
-from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile, AdminProfile, ClassRoom
+from .models import User, StudentProfile, Homework, LeaveRequest, HomeworkSubmission, TeaacherProfile, AdminProfile, ClassRoom, Course
 
 
 class StudentRegistrationForm(UserCreationForm):
@@ -49,18 +49,38 @@ class StudentRegistrationForm(UserCreationForm):
 class HomeworkForm(forms.ModelForm):
     class Meta:
         model = Homework
-        fields = ('course', 'title', 'description', 'due_date')
+        fields = ['course', 'title', 'description', 'due_date']
+
         widgets = {
             'course': forms.Select(attrs={'class': 'form-select'}),
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Homework title'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Detailed description'}),
-            'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter homework title'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Enter homework details'
+            }),
+            'due_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
         }
-        labels = {
-            'course': 'Course',
-            'title': 'Title',
-            'description': 'Description',
-            'due_date': 'Due Date',
+        
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ['title', 'classroom']   # teacher will be auto-assigned in the view
+
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter course title'
+            }),
+            'classroom': forms.Select(attrs={
+                'class': 'form-select'
+            }),
         }
 
 

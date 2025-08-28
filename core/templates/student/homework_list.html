@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>My Homework</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Course</th>
+                <th>Due Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hw in homeworks %}
+            <tr>
+                <td>{{ hw.title }}</td>
+                <td>{{ hw.course.title }}</td>
+                <td>{{ hw.due_date }}</td>
+                <td>
+                    <a href="{% url 'submit_homework' hw.id %}" class="btn btn-sm btn-success">Submit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">No homework assigned yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

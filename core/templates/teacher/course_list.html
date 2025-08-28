@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>My Courses</h2>
+    <a href="{% url 'create_course' %}" class="btn btn-primary mb-3">+ Create Course</a>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Course</th>
+                <th>Class</th>
+                <th>Homeworks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.title }}</td>
+                <td>{{ course.classroom.name }}</td>
+                <td>
+                    <a href="{% url 'course_homeworks' course.id %}" class="btn btn-sm btn-info">View Homeworks</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">No courses created yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

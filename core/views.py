@@ -26,7 +26,8 @@ from calendar import monthrange
 
 
 from .models import User, StudentProfile, Course, Homework, HomeworkSubmission, PaymentTransaction, BusLocation, Bus, TeaacherProfile, LeaveRequest, Notification, Message, ExamMark,AdminProfile, ClassRoom
-from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm, PasswordResetRequestForm, UserPasswordChangeForm, ClassRoomForm
+
+from .forms import StudentRegistrationForm, HomeworkForm, SubmissionForm, LeaveRequestForm, StudentProfileForm, TeacherProfileForm, AdminProfileForm, PasswordResetRequestForm, UserPasswordChangeForm, ClassRoomForm, CourseForm
 
 
 def homepage(request):
@@ -293,11 +294,46 @@ def student_profile_and_edit(request):
         'profile': profile
     })
 
+
 @login_required
-def create_homework(request):
+def create_course(request):
+    if request.user.role != "teacher":
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.teacher = request.user  # auto-assign logged-in teacher
+            course.save()
+            messages.success(request, "Course created successfully!")
+            return redirect("teacher_courses")
+    else:
+        form = CourseForm()
+
+    # limit classrooms to only those assigned to this teacher
+    form.fields['classroom'].queryset = ClassRoom.objects.filter(teacher=request.user)
+
+    return render(request, "teacher/create_course.html", {"form": form})
+
+@login_required
+def teacher_courses(request):
+    if request.user.role != "teacher":
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    courses = Course.objects.filter(teacher=request.user).select_related("classroom")
+    return render(request, "teacher/course_list.html", {"courses": courses})
+
+
+
+@login_required
+def create_homework(request, course_id=None):
     if request.user.role != 'teacher':
         messages.error(request, 'Permission denied')
         return redirect('dashboard')
+
     if request.method == 'POST':
         form = HomeworkForm(request.POST)
         if form.is_valid():
@@ -305,10 +341,72 @@ def create_homework(request):
             hw.created_by = request.user
             hw.save()
             messages.success(request,'Homework created')
-            return redirect('dashboard')
+            return redirect('course_homeworks', course_id=hw.course.id)
     else:
         form = HomeworkForm()
+
+    # limit courses to teacher's courses only
+    form.fields['course'].queryset = Course.objects.filter(teacher=request.user)
+
+    # preselect if course_id given
+    if course_id:
+        form.fields['course'].initial = Course.objects.get(id=course_id)
+
     return render(request, 'teacher/create_homework.html', {'form': form})
+
+
+@login_required
+def course_homeworks(request, course_id):
+    if request.user.role != 'teacher':
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    course = get_object_or_404(Course, id=course_id, teacher=request.user)
+    homeworks = Homework.objects.filter(course=course).order_by("-created_at")
+
+    return render(request, "teacher/course_homeworks.html", {
+        "course": course,
+        "homeworks": homeworks
+    })
+
+
+
+@login_required
+def teacher_homeworks(request):
+    if request.user.role != 'teacher':
+        messages.error(request, 'Permission denied')
+        return redirect('dashboard')
+
+    homeworks = Homework.objects.filter(created_by=request.user).select_related("course")
+    return render(request, 'teacher/homework_list.html', {"homeworks": homeworks})
+
+@login_required
+def view_submissions(request, homework_id):
+    if request.user.role != "teacher":
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    homework = get_object_or_404(Homework, id=homework_id, created_by=request.user)
+    submissions = HomeworkSubmission.objects.filter(homework=homework).select_related("student")
+
+    return render(request, "teacher/view_submissions.html", {
+        "homework": homework,
+        "submissions": submissions,
+    })
+
+
+@login_required
+def student_homeworks(request):
+    if request.user.role != "student":
+        messages.error(request, "Permission denied.")
+        return redirect("dashboard")
+
+    student = request.user.student_profile
+    homeworks = Homework.objects.filter(course__classroom=student.class_room).order_by("-created_at")
+
+    return render(request, "student/homework_list.html", {"homeworks": homeworks})
+
+
 @login_required
 def submit_homework(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
@@ -658,3 +756,40 @@ def fee_report_by_admin(request):
 
     return render(request, "admin/fee_report.html", {"report": report, "month": today.strftime("%B %Y")})
 
+
+@login_required
+def class_details(request, class_id):
+    # Get the classroom object or return 404
+    classroom = get_object_or_404(ClassRoom, id=class_id)
+    
+    # Check if user has permission to view this class
+    if request.user.role == 'teacher' and classroom.teacher != request.user:
+        messages.error(request, "You don't have permission to view this class.")
+        return redirect('dashboard')
+    
+    # Students can only view classes they're enrolled in
+    if request.user.role == 'student':
+        student_profile = getattr(request.user, 'student_profile', None)
+        if not student_profile or student_profile.class_room != classroom:
+            messages.error(request, "You don't have permission to view this class.")
+            return redirect('dashboard')
+    
+    # Get all courses for this classroom
+    courses = Course.objects.filter(classroom=classroom)
+    
+    # Get all students in this classroom
+    students = StudentProfile.objects.filter(class_room=classroom, status='active')
+    
+    # Get teacher profile if available
+    teacher_profile = None
+    if classroom.teacher:
+        teacher_profile = getattr(classroom.teacher, 'teacher_profile', None)
+    
+    context = {
+        'classroom': classroom,
+        'courses': courses,
+        'students': students,
+        'teacher_profile': teacher_profile,
+    }
+    
+    return render(request, 'teacher/class_details.html', context)

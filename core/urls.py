@@ -29,8 +29,23 @@ urlpatterns = [
     path('admin_profile/', views.admin_profile, name='admin_profile'),
     path('admin_profile_edit/', views.admin_profile_edit, name='admin_profile_edit'),
     
-    path('teacher/homework/create/', views.create_homework, name='create_homework'),
-    path('student/homework/<int:pk>/submit/', views.submit_homework, name='submit_homework'),
+    
+       # Course
+    path("teacher/courses/create/", views.create_course, name="create_course"),
+    path("teacher/courses", views.teacher_courses, name="teacher_courses"),
+
+    # Homework Management for Teachers 
+    path("teacher/homework/create/", views.create_homework, name="create_homework"),
+    path("teacher/course_homeworks<int:course_id>", views.course_homeworks, name="course_homeworks"),
+    path("teacher/teacher_homeworks", views.teacher_homeworks, name="teacher_homeworks"),
+    path("teacher/view_submissions", views.view_submissions, name="view_submissions"),
+    
+    # Homework Management for Students
+    path("student/homework/", views.student_homeworks, name="student_homeworks"),
+    path("student/homework/<int:pk>/submit/", views.submit_homework, name="submit_homework"),
+    
+    
+    
     path('payment/initiate/', views.initiate_payment, name='initiate_payment'),
     path('payment/callback/', views.payment_callback, name='payment_callback'),
     path('api/bus/locations/', views.bus_locations_json, name='bus_locations_json'),
@@ -60,5 +75,7 @@ urlpatterns = [
     path("admin_fee-history/", views.admin_fee_history, name="admin_fee_history"),
     
     path("fee_report_by_admin/", views.fee_report_by_admin, name="fee_report_by_admin"),
+    
+    path("class/<int:class_id>/details/", views.class_details, name="class_details"),
     
 ]

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Create Course</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.title.label_tag }}  
+            {{ form.title }}
+        </div>
+        <div class="mb-3">
+            {{ form.classroom.label_tag }}
+            {{ form.classroom }}
+        </div>
+        <button type="submit" class="btn btn-success">Create Course</button>
+    </form>
+</div>
+{% endblock %}
